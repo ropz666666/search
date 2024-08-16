@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>师大搜索引擎</title>
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <script src="jquery.js"></script>
+    <script type="module" src="/js/main.js"></script>
+  
+    <script>
+    
+    //   window.onload = function() {
+    //   var diborder= document.querySelector('.diborder');
+    //   var searchBar = document.querySelector('#search_bar');
+    //   var searchBarHeight = searchBar.offsetHeight; // 获取搜索栏的高度
+    //   var stickyTop = searchBar.offsetTop+200; // 获取搜索栏的初始偏移量
+    //   window.onscroll = function() {
+    //     var scrollY = window.pageYOffset || document.documentElement.scrollTop; // 获取滚动条位置
+            
+    //     // 检查滚动位置是否超过了搜索栏的初始位置
+    //     if (scrollY > stickyTop) {
+    //       // 当滚动超过搜索栏的初始位置时，添加固定类
+    //       if (!searchBar.classList.contains('fixed')) {
+    //         searchBar.classList.add('fixed');
+    //         $(diborder).css("display","inline-block");
+    //         // 需要减去搜索栏的高度，避免滚动时页面跳动
+    //         document.body.style.paddingTop = searchBarHeight + 'px';
+    //       }
+    //     } else {
+    //       // 当滚动回到搜索栏的初始位置时，移除固定类
+    //       if (searchBar.classList.contains('fixed')) {
+    //         searchBar.classList.remove('fixed');
+    //         $(diborder).css("display","none");
+    //         document.body.style.paddingTop = '0';
+    //       }
+    //     }
+    //   };
+    // };
+      
+  </script>
+</head>
+<body>
+  
+  <div class="diborder"></div>
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p id="modalTitle"></p>
+      <p id="modalContent"></p>
+      <div id="SapperButton">
+        <span>询问Sapper</span>
+      </div>
+    </div>
+   
+  </div>
+  
+<div id="wrapper">
+  <div id="head">
+    <!-- 用户顶部设计 -->
+    <div id="topul" class="s-top-right s-isindex-wrap">
+      <button id="knowledge-base-btn" class=" c-font-normal c-color-t s-top-right-new" onclick="location.href='upload_files.html'">创建知识库</button>
+        <!-- <span class="s-top-right-text c-font-normal c-color-t s-top-right-new" id="s-usersetting-top" name="tj_settingicon">设置</span>
+        <a id="s-top-username" class="s-top-username s-top-right-new" data-tid="2004" href="https://www.baidu.com/my/index" target="_blank"><span class="s-top-img-wrapper"><img src="https://himg.bdimg.com/sys/portraitn/item/public.1.4c3593e.kIXpXlafmR59WEN4enrq6w"></span>
+            <span class="user-name c-font-normal c-color-t">叶鏊乃我和</span>
+        </a>
+        <div id="s-user-name-menu" class="s-top-userset-menu c-floating-box c-font-normal" style="display: none; right: 32.5px;">
+        <a href="https://www.baidu.com/my/index" class="user-menu-item" target="_blank" data-tid="1000">
+            个人中心
+        </a>
+        <a href="http://passport.baidu.com/" class="user-menu-item" data-tid="1001" target="_blank">
+            账号设置
+        </a>
+        <a class="s-switch-accunt" href="javascript:;">切换账号</a><a class="quit" style="overflow:hidden" href="javascript:;" onclick="return false;">
+            退出登录
+        </a> -->
+    </div>
+    </div>
+    <!-- 搜索界面设计 -->
+    <div class="search_box">
+        <div class="search_cotent">
+        <!-- 界面图标 -->
+        <div class="search_icon">
+         <img src="image/sapperLogo.png">
+        </div>
+        <!-- 搜索栏 -->
+         <div id="search_bar">
+              <span class="bg s_ipt_wr new-pmd quickdelete-wrap">
+              <input type="text" class="s_ipt" name="wd" id="sousuo" maxlength="100" autocomplete="off">
+              </span>
+              <span class="btn_wr s_btn_wr bg" id="s_btn_wr">
+              <input type="button" value="搜索" id="su" class="btn self-btn bg s_btn"></span>
+           
+         </div>
+    </div>
+</div>
+  </div>
+</div>
+<div id="htmlbackground">
+<div id="content">
+  <div class="main_it">
+    <div class="list_container">
+      <!-- 每个回答和问题 -->
+    
+</div>
+</div>
+</div>
+
+</div>
+<div id="loading-container">
+  <div class="loading-spinner"></div>
+  <p>正在搜索中...</p>
+</div>
+<button id="open-btn">
+  <img src="image/chatlogo.png">
+</button>
+<div id="chat-sidebar">
+  <div id="chat-title">
+    <h2>Sapper对话助手</h2>
+    <button id="close-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 10.8477L16.6091 6.23864C16.9273 5.92045 17.4432 5.92045 17.7614 6.23864C18.0795 6.55683 18.0795 7.07272 17.7614 7.39091L13.1523 12L17.7614 16.6091C18.0795 16.9273 18.0795 17.4432 17.7614 17.7614C17.4432 18.0795 16.9273 18.0795 16.6091 17.7614L12 13.1523L7.39091 17.7614C7.07272 18.0795 6.55683 18.0795 6.23864 17.7614C5.92045 17.4432 5.92045 16.9273 6.23864 16.6091L10.8477 12L6.23864 7.39091C5.92045 7.07272 5.92045 6.55683 6.23864 6.23864C6.55683 5.92045 7.07272 5.92045 7.39091 6.23864L12 10.8477Z" fill="#6D5FFD"></path></svg></button>
+</div>
+    <div id="chat-box">
+        <div id="chat-messages">
+        </div>
+    </div>
+    <div id="input-container">
+      <textarea rows="1" autoHeight="true"  id="user-input" placeholder="输入消息...(按ctrl+enter发送消息)"></textarea>
+      <button id="send-btn">发送</button>
+  </div>
+</div>
+<button id="backToTopBtn">返回顶部</button>
+</body>
+</html>
+

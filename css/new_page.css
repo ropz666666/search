@@ -1,0 +1,727 @@
+body, form {
+    position: relative;
+    z-index: 0;
+}
+body {
+    min-height: 100vh; /* 至少与视口一样高 */
+    overflow-y: auto;
+
+}
+*{
+    margin: 0;
+}
+
+
+#search_bar_container {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #f2f3f5;
+    padding: 10px;
+    z-index: 1000;
+}
+
+#search_bar {
+    width: 70%;
+    padding: 10px;
+    border-radius: 4px;
+    position: fixed;
+    top: 0;
+    left: 20%;
+    z-index: 1000;
+    
+}
+
+#search_btn {
+    width: 20%;
+    padding: 10px;
+    border: none;
+    background-color: #4e6ef2;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.search_box .s_btn:hover{
+    background-color :#4662d9;
+}
+
+
+#content {
+    margin-bottom: 20px; /* 对话框和搜索栏之间的距离 */
+}
+
+#input_container {
+    margin-top: 20px; /* 对话框和搜索栏之间的距离 */
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* 添加其他必要的样式 */
+#sousuo{
+    width: 100%;
+    height: 16px;
+    padding: 12px 16px;
+    font-size: 16px;
+    margin: 0;
+    vertical-align: top;
+    outline: 0;
+    box-shadow: none;
+    border-radius: 10px 0 0 10px;
+    border: 2px solid #c4c7ce;
+    background: #fff;
+    color: #222;
+    overflow: hidden;
+    box-sizing: content-box;
+    -webkit-tap-highlight-color: transparent;
+}
+#search_bar input{
+    outline: 0;
+    -webkit-appearance: none;
+}
+.search_span:hover #sousuo{
+    border-color: #a7aab5;
+}
+#sousuo:focus{
+    border-color: #4e6ef2 !important;
+}
+ .s_btn_wr{
+    width: 15%;
+    height: 44px;
+    position: relative;
+    z-index: 2;
+    display: inline-block;
+    zoom: 1;
+    background: 0 0;
+    vertical-align: top;
+}
+.s_btn{
+    cursor: pointer;
+    width: 100%;
+    height: 44px;
+    line-height: 45px;
+    line-height: 44px \9;
+    padding: 0;
+    background: 0 0;
+    background-color: #4e6ef2;
+    border-radius: 0 10px 10px 0;
+    font-size: 17px;
+    color: #fff;
+    box-shadow: none;
+    font-weight: 400;
+    border: none;
+    outline: 0;
+    text-align: center;
+}
+#search_cotent{
+    height: 60px;
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+    z-index: 100;
+
+}
+.s_ipt_wr{
+    position: relative;
+    width: 75%;
+    display: inline-block;
+    zoom: 1;
+    background: 0 0;
+    vertical-align: top;
+}
+
+  .diborder{
+    display:inline-block;
+    position: fixed;
+    width: 100%;
+    height: 60px;
+    background-color: #f8f8f8;
+    top:0;
+    left: 0;
+    z-index: 2000;
+  }
+  #search_bar{
+  
+    z-index: 3000;
+}
+
+#htmlbackground {
+    width: 100%; /* 视口宽度 */
+   min-height: 100%;
+    background-color: #f2f3f5;
+    position: absolute; /* 使用绝对定位代替固定定位 */
+    top: 0;
+    left: 0;
+    z-index: -1; /* 确保内容在背景之上 */
+}
+
+/* 文章盒子和对话助手盒子的容器 */
+#contentboxandchatbox {
+    width: 55%;
+    margin: 0 auto;
+    margin-top: 80px;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 文章盒子样式 */
+#main_father {
+    margin-bottom: 20px;
+}
+
+#content {
+    text-align: justify;
+}
+
+#content_title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#content_description {
+    font-size: 20px;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+/* 图片样式，假设图片在内容盒子内 */
+#contenttext img {
+    max-width: 100%;
+    height: auto;
+    margin: 10px 0;
+}
+/* 固定位置的按钮样式 */
+.fixed-btn {
+    position: fixed;
+   top: 25%;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 1000; /* 确保按钮在所有内容之上 */
+    font-size: 16px;
+}
+
+/* 按钮悬浮效果 */
+.fixed-btn:hover {
+    background-color: #0056b3;
+}
+/* 固定位置的按钮样式（之前已提供，这里不再重复） */
+
+/* 对话助手对话框样式 */
+#chat_assistant {
+    display: none; /* 默认不显示 */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1001; /* 确保在按钮之上 */
+}
+
+#chat_box {
+    height: 300px; /* 对话框高度，可以根据需要调整 */
+    overflow-y: auto;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+#input_container {
+    padding: 10px;
+    display: flex;
+}
+
+#user_input {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#send_btn {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#send_btn:hover {
+    background-color: #0056b3;
+}
+/* 关闭按钮样式 */
+.close-btn {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.close-btn:hover {
+    color: red;
+}
+
+/* 对话助手头部样式 */
+#chat_header {
+    padding: 10px;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+/* 相关问题和内容样式 */
+#related_content {
+    width: 55%;
+    margin: 0 auto;
+    margin-top: 20px;
+    padding: 20px 20px 0px 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#related_content #aisearch h3 {
+    margin-top: 0;
+    font-size: 18px;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+.item-hd {
+    line-height: 22px;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    position: relative;
+}
+.item-hd .title {
+    font-size: 18px;
+    vertical-align: top;
+    cursor: pointer; /* 鼠标悬停时变成点击状 */
+}
+ .list-item {
+    margin-top: 10px;
+    border-bottom: 1px solid #ededed;
+    background: #fff;
+}
+.so-items-normal {
+    padding: 20px
+}
+.so-items-normal .item-hd .title {
+    font-size: 18px;
+    vertical-align: top;
+    cursor: pointer}
+.item-bd .item-bd_cont .row2 {
+        line-height: 1.5em;
+        white-space: normal;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        position: relative;
+    }
+    .highlight {
+        color: red;
+        font-weight: bold;
+    }
+    #Aisearchquestion {
+        width: 80%;
+        margin: 0 auto;
+        padding-top: 10px;
+        position: relative;
+        overflow: hidden;;
+    }
+    #related_content .list-item:last-child {
+        margin-bottom: 20px; /* 或者您想要的其他值 */
+    }
+    #related_list {
+        list-style: none;                                             
+        padding: 0;
+    }
+    .future_view p{
+        padding-bottom: 15px;
+    }
+    #related_list li {
+        margin: 10px 0px;
+        padding: 10px 0 10px 20px;
+    }
+    #related_content #related_list li:last-child {
+        margin-bottom: 20px; /* 或者您想要的其他值 */
+    }
+    #related_list a {
+        text-decoration: none;
+        color: #007bff;
+    }
+    
+    #related_list a:hover {
+        text-decoration: underline;
+    }
+    #leftcontainer {
+        position: fixed;
+        left: -420px;
+        top: 8%;
+        width: 400px;
+        height: 80%;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        z-index: 6000;
+        transition: left 0.5s;
+        overflow: visible;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+    }
+    
+    .header {
+        display: flex;
+        justify-content: center;
+        padding: 10px 0;
+        background-color: #f8f8f8;
+        border-bottom: 1px solid #e7e7e7;
+    }
+    
+    .header button {
+        padding: 10px 20px;
+        margin: 0 5px;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 14px;
+        border-radius: 4px;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .button-near {
+        background-color: #ff5722;
+        color: #fff;
+    }
+    
+    .button-middle {
+        background-color: #4caf50;
+        color: #fff;
+    }
+    
+    .button-far {
+        background-color: #2196f3;
+        color: #fff;
+    }
+    
+    .header button:hover {
+        opacity: 0.8;
+    }
+    
+    .menu {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 10px;
+    }
+    
+    .menu button {
+        border: none;
+        background: none;
+        cursor: pointer;
+    }
+    
+    .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+    }
+    
+    .incontainer {
+        width: calc(100% - 40px);
+        height: 150px;
+        border: 1px solid #e7e7e7;
+        padding: 15px;
+        margin-bottom: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .incontainer hr {
+        border: none;
+        border-top: 1px solid #e7e7e7;
+        margin: 10px 0;
+    }
+    
+    .incontainer button {
+        border: none;
+        background-color: #ff5722;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 4px;
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .incontainer button:hover {
+        background-color: #e64a19;
+    }
+   
+
+    .content input[type="radio"] {
+        margin-left: 10px;
+    }
+    #chat-sidebar {
+        position: fixed;
+        right: -420px;
+        top: 0;
+        width: 400px;
+        height: 100%;
+        background-color: #f5f5f5;
+        border-left: 1px solid darkgrey;
+        z-index: 6000;
+        transition: right 0.5s;
+        overflow-y: auto;
+    }
+    #chat-sidebar.open {
+        right: 0;
+    }
+    #leftcontainer.openleft{
+        left: 0;
+    }
+    #chat-box {
+       
+       
+        position: relative;
+        bottom: 0; /* 确保chat-box在页面底部 */
+        height: 80%; /* 设置chat-box的固定高度 */
+        /* overflow-y: auto; 允许垂直滚动查看更多对话 */
+    }
+    #chat-messages {
+      
+        width: 98%; /* 调整消息区域的高度，留出空间给输入栏 */
+        overflow-y:auto;
+        position: absolute;
+        bottom: -5px; /* 确保消息在页面底部 */
+        height: calc(100% - 0px); 
+        margin: 0 5px;
+    }
+    .message {
+        max-width: 70%;
+        margin: 5px 0;
+        padding: 10px;
+        border-radius: 5px;
+        display: block; /* 修改为块级元素，实现多排对话效果 */
+        clear: both; /* 清除浮动，确保多排布局 */
+        bottom: 20px;
+        word-wrap: break-word; /* 允许长单词在必要时换行 */
+        white-space: normal; /* 允许文本在必要时换行 */
+    }
+    .user-message {
+        background-color: #DCF8C6;
+        float: right;
+    }
+    .ai-message {
+        background-color: #e9e9e9;
+        float: left;
+    }
+    .openleftbutton{
+        position: fixed;
+        top:20%;
+        width: 50px;
+        height: 50px;
+     
+    }
+    #open-btn{
+        position: fixed;
+        top:20%;
+        right: 0;
+        
+    }
+    #close-btn {
+        position: absolute;
+        top: 0;
+        left: 10px;
+    }
+    #input-container {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        padding: 10px 0 10px 0;
+     
+        background-color: #f5f5f5;
+        border-top: 1px solid #ccc;
+        
+    }
+    #user-input {
+        width: calc(100% - 130px); /* 增大输入框的宽度 */
+        padding: 10px;
+        height: 37px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-left: 5px;
+        white-space: pre-wrap;
+        font-size: 15px;
+        resize: none;
+    }
+    #send-btn {
+        width: 80px; /* 设置发送按钮的宽度 */
+        height: 40px; /* 设置发送按钮的高度 */
+        border: none;
+        background-color: #0084ff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        float: right;
+        position: absolute;
+        top: 28%;
+        right: 3%;
+    }
+    #send-btn:hover {
+        background-color: #0077e6;
+    }
+    #chat-sidebar::after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+    #chat-title {
+        background-color: #f5f5f5;
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+        position: relative;
+    }
+    #chat-title h2 {
+        margin: 0;
+        background: linear-gradient(to right, #007bff, #fa5bff); /* 蓝色渐变背景 */
+        -webkit-background-clip: text; /* 文本剪裁为背景 */
+        color: transparent; /* 文字颜色透明，以显示背景 */
+        font-size: 18px; /* 设置文字大小 */
+        padding: 5px 10px; /* 设置内边距 */
+        margin: 0 auto;
+        
+    }
+    #close-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        margin-left: -5px;
+        margin-top: 10PX;
+    }
+    #open-btn img{
+        border: 0;
+        width: 50px;
+        height: 50px;
+    }
+ 
+    
+    .aianalysis-container h4 {
+        color: #333;
+        border-bottom: 2px solid #007BFF;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+    }
+     
+    .aianalysis-container p {
+        line-height: 1.6;
+        color: #666;
+        margin-bottom: 15px;
+    }
+    
+    .case_solution,.tech-analysis,.future_view {
+        margin-bottom: 20px;
+    }
+    .future-prospects{
+        padding-bottom: 10px;
+    }
+    #backToTopBtn {
+        position: fixed;
+        bottom: 50px;
+        right: 50px;
+        background-color: #87cefa; /* 浅蓝色 */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.5s, visibility 0.5s;
+    }
+    
+    #backToTopBtn.show {
+        opacity: 1;
+        visibility: visible;
+    }
+    
+    #loading-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.8);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    
+    #loading-animation img {
+        width: 150px;
+        height: auto;
+    }
+    
+    #back-button {
+        position: fixed;
+        top: 10px;
+        left: 15px;
+        z-index: 5000;
+        background-color: #333;
+        color: white;
+        padding: 10px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        border-radius: 5px;
+    }  
+    @media  (max-width: 480px)and (min-width: 320px) {
+       
+        #search_bar{
+            width: 80%;
+        }
+        #contentboxandchatbox{
+            width: 70%;
+        }
+        #related_content{
+            width: 70%;
+        }
+        #open-btn img{
+            width: 35px;
+            height: 35px;
+        }
+        
+    }

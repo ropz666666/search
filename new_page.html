@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>师大搜索引擎</title>
+    <link rel="stylesheet" type="text/css" href="css/new_page.css" />
+    <script src="jquery.js"></script>
+    <script type="module" src="/js/new_page.js"></script>
+</head>
+<style>
+    .loading::after {
+      content: "正在思考中";
+      animation: dots 1s steps(5, end) infinite;
+    }
+    @keyframes dots {
+      0%, 20% {
+        content: "正在思考中";
+      }
+      40% {
+        content: "正在思考中.";
+      }
+      60% {
+        content: "正在思考中..";
+      }
+      80%, 100% {
+        content: "正在思考中...";
+      }
+    }
+  </style>
+<body>
+    <div id="loading-animation">
+        <img src="image/running.gif" alt="Loading...">
+    </div>
+    <div class="diborder"></div>
+   
+          <!-- 搜索界面设计 -->
+    
+              <!-- 界面图标 -->
+               <div id="search_cotent" style="display: none;">
+              <!-- 搜索栏 -->
+               <div id="search_bar">
+                    <span class="bg s_ipt_wr new-pmd quickdelete-wrap">
+                    <input type="text" class="s_ipt" name="wd" id="sousuo" maxlength="100" autocomplete="off">
+                    </span>
+                    <span class="btn_wr s_btn_wr bg" id="s_btn_wr">
+                    <input type="button" value="搜索" id="su" class="btn self-btn bg s_btn"></span>
+                 
+               </div>
+     
+            </div>
+        <!-- 对话助手的内容将在此处动态添加 -->
+        <div id="htmlbackground" style="display: none;">
+            <div id="contentboxandchatbox">
+                <div id="main_father">
+                    <div id="content">
+                        <p id="content_title"></p>
+                        <div id="content_description"></div>
+                    </div>
+                </div>
+            </div>
+           
+            <div id="related_content">
+            <div id="aisearch"><h3>深层解读</h3></div>
+            <!-- <ul id="related_list">
+                <li><a href="#">类似问题1</a></li>
+                <li><a href="#">类似问题2</a></li>
+                <li><a href="#">类似问题3</a></li>
+            </ul> -->
+            <div class="aianalysis-container">
+                <div class="case_solution">
+                    <h4>案例分析</h4>
+                    <p id="aianswer"></p>
+                </div>
+                <!-- <div class="tech-analysis">
+                    <h4>技术解读</h4>
+                    <p id="aianswer" class="loading"> </p>
+                </div> -->
+                <div class="future_view">
+                    <h4>未来展望</h4>
+                    <p id="aianswer"></p>
+                </div>
+            </div>
+            </div>
+            <div id="related_content" >
+                <div id="aisearch"><h3>相关技术与内容</h3></div>
+         
+                <div class="list-item">
+                    <div class="so-items-normal">
+                    <div class="item-hd">
+                        <h3 class="title substr"></h3>
+                    </div>
+                    <div class="item-bd">
+                        <div class="item-bd_cont">
+                            <p class="row2"></p>
+                </div>
+            </div>
+            </div>
+                </div>  
+                <div class="list-item">
+                    <div class="so-items-normal">
+                    <div class="item-hd">
+                        <h3 class="title substr"></h3>
+                    </div>
+                    <div class="item-bd">
+                        <div class="item-bd_cont">
+                            <p class="row2"></p>
+                </div>
+            </div>
+            </div>
+                </div>  
+                  <div class="list-item">
+                    <div class="so-items-normal">
+                    <div class="item-hd">
+                        <h3 class="title substr"></h3>
+                    </div>
+                    <div class="item-bd">
+                        <div class="item-bd_cont">
+                            <p class="row2"></p>
+                </div>
+            </div>
+            </div>
+                </div>  
+               
+            </div>
+            
+        </div>
+        <div id="leftcontainer">
+            <div class="header">
+                <button class="top button-near">近</button>
+                <button class="top button-middle">中</button>
+                <button class="top button-far">远</button>
+            </div>
+            <div class="menu">
+                <button class="top">
+                    <svg t="1722947287315" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                         p-id="14624" xmlns:xlink="http://www.w3.org/1999/xlink" width="15" height="15">
+                        <path d="M112 224h800c25.6 0 48-22.4 48-48S937.6 128 912 128h-800C86.4 128 64 150.4 64 176S86.4 224 112 224z m384 608h-384c-25.6 0-48 22.4-48 48S86.4 928 112 928h384c25.6 0 48-22.4 48-48s-22.4-48-48-48z m419.2-307.2L672 697.6c-16 12.8-16 35.2 0 48l240 179.2c19.2 12.8 48 0 48-22.4v-352c0-25.6-25.6-38.4-44.8-25.6zM496 480h-384c-25.6 0-48 22.4-48 48S86.4 576 112 576h384c25.6 0 48-22.4 48-48s-22.4-48-48-48z"
+                              p-id="14625"></path>
+                    </svg>
+                </button>
+            </div>
+            <br>
+            <div class="container">
+                <div class="incontainer">
+                    案例内容1
+                    <hr>
+                    未来展望1
+                    <!-- <button class="ooo">o</button> -->
+                </div>
+                <br>
+                <div class="incontainer">
+                    案例内容2
+                    <hr>
+                    未来展望2
+                    <!-- <button class="ooo">o</button> -->
+                </div>
+                <br>
+                <div class="incontainer">
+                    案例内容3
+                    <hr>
+                    未来展望3
+                    <!-- <button class="ooo">o</button> -->
+                </div>
+            </div>
+        </div>
+        <button class="top openleftbutton">
+            <svg t="1723001742415" class="icon" class="flip-svg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5880" xmlns:xlink="http://www.w3.org/1999/xlink" width="15" height="15"><path d="M0 153.6h1024V256H0zM0 460.8h614.4v102.4H0zM0 768h614.4v102.4H0zM819.2 460.8v409.6L1024 665.6z" fill="#242424" p-id="5881"></path></svg>
+        </button>
+            <button id="open-btn">
+                <img src="image/chatlogo.png">
+            </button>
+            <div id="chat-sidebar">
+                <div id="chat-title">
+                  <h2>Sapper对话助手</h2>
+                  <button id="close-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 10.8477L16.6091 6.23864C16.9273 5.92045 17.4432 5.92045 17.7614 6.23864C18.0795 6.55683 18.0795 7.07272 17.7614 7.39091L13.1523 12L17.7614 16.6091C18.0795 16.9273 18.0795 17.4432 17.7614 17.7614C17.4432 18.0795 16.9273 18.0795 16.6091 17.7614L12 13.1523L7.39091 17.7614C7.07272 18.0795 6.55683 18.0795 6.23864 17.7614C5.92045 17.4432 5.92045 16.9273 6.23864 16.6091L10.8477 12L6.23864 7.39091C5.92045 7.07272 5.92045 6.55683 6.23864 6.23864C6.55683 5.92045 7.07272 5.92045 7.39091 6.23864L12 10.8477Z" fill="#6D5FFD"></path></svg></button>
+              </div>
+                  <div id="chat-box">
+                      <div id="chat-messages">
+                      </div>
+                  </div>
+                  <div id="input-container">
+                    <textarea rows="1" autoHeight="true"  id="user-input" placeholder="输入消息...(按ctrl+enter发送消息)"></textarea>
+                    <button id="send-btn">发送</button>
+                </div>
+              </div>
+              <button id="backToTopBtn">返回顶部</button>
+              <button id="back-button">返回</button>
+</body>
+</html>

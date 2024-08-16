@@ -1,0 +1,133 @@
+  /* 侧边栏样式继承自主页面 */
+  #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    background-color: #f5f5f5;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+#sidebar button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    background-color: #00aaff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+#sidebar button:hover {
+    background-color: #0099cc;
+}
+
+ /* 样式调整 */
+ #refresh-btn, #submit-btn {
+    margin: 10px;
+    padding: 10px;
+    background-color: #00aaff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+#refresh-btn:hover, #submit-btn:hover {
+    background-color: #0099cc;
+}
+
+
+
+
+#content-box {
+    position: absolute;
+    top: 5%;
+    background-color: white;
+    width: 600px;
+    padding: 20px;
+    height: 700px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden; /* 防止内容溢出 */
+}
+
+
+
+#data-container {
+    max-height: 500px; /* 限制容器的最大高度 */
+    overflow-y: auto; /* 启用垂直滚动条 */
+    margin: 20px;
+    padding-right: 10px; /* 预留一些空间给滚动条 */
+    box-sizing: border-box;
+}
+
+.data-item {
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.data-item textarea {
+    width: 100%;
+    margin-top: 5px;
+    box-sizing: border-box; /* 保证宽度计算准确 */
+}
+@media screen and (max-width: 768px) {
+    #sidebar {
+        left: -250px; /* 默认隐藏侧边栏 */
+    }
+
+    #sidebar.active {
+        left: 0; /* 显示侧边栏 */
+    }
+    #content-box{
+        width: 80%;
+    }
+
+    #sidebar-toggle {
+        display: block;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background-color: #00aaff;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        z-index: 3000;
+    }
+    select {
+        width: 35%;
+        margin: 10px 0;
+        padding: 10px 0;
+        font-size: 13px;
+    }
+    #content-1 {
+       
+        width: 100%;
+      
+    }
+   
+    
+}
+
+/* 在大于768px的屏幕上，默认显示侧边栏，隐藏切换按钮 */
+@media screen and (min-width: 769px) {
+    #sidebar-toggle {
+        display: none;
+    }
+
+
+    #sidebar {
+        left: 0;
+    } 
+    #sidebar #sidebar-close{
+        display: none;
+    }
+}

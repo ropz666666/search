@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据优化</title>
+    <link rel="stylesheet" type="text/css" href="/css/upload_files.css" />
+    <link rel="stylesheet" type="text/css" href="/css/upload_files2.css" />
+    <script src="jquery.js"></script>
+    <script type="text/javascript" src="/js/upload_files2.js"></script>
+    
+    <style>
+
+    </style>
+</head>
+<body>
+    <button id="sidebar-toggle" onclick="toggleSidebar()">菜单</button>
+    <div id="sidebar">
+        <button id="sidebar-close" onclick="closeSidebar()">关闭菜单</button>
+        <button id="return-btn" onclick="window.location.href='main.html'">返回主界面</button>
+        <button onclick="window.location.href='upload_files.html'">信息录入</button>
+        <button onclick="window.location.href='upload_files2.html'">信息数字化</button>
+    </div>
+    
+    <div id="gray-background">
+        <div id="content-box">
+            <div id="header">
+                <span id="header-title">信息数字化</span>
+                <button id="refresh-btn">刷新数据</button>
+                <button id="submit-btn">提交处理</button>
+            </div>
+            <div id="big-box">
+                <div id="app" class="is-component">
+                   
+
+                    <div id="data-container"></div>
+               
+           
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var toggleButton = document.getElementById('sidebar-toggle');
+    sidebar.classList.add('active');
+    toggleButton.style.display = 'none';
+
+}
+    function closeSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var toggleButton = document.getElementById('sidebar-toggle');
+
+
+    sidebar.classList.remove('active');
+    toggleButton.style.display = 'block';
+  
+}
+    </script>
+</body>
+</html>

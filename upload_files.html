@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>创建知识库</title>
+    <link rel="stylesheet" type="text/css" href="/css/upload_files.css" />
+    <script type="text/javascript" src="/js/upload_files.js"></script>
+    <!-- 引入 mammoth.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+    <!-- 引入 SheetJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- 引入 PapaParse -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    
+</head>
+<body>
+    <button id="sidebar-toggle" onclick="toggleSidebar()">菜单</button>
+    <div id="gray-background">
+        <div id="sidebar">
+            <button id="sidebar-close" onclick="closeSidebar()">关闭菜单</button>
+            <button id="return-btn" onclick="window.location.href='main.html'">返回主界面</button>
+            <button onclick="window.location.href='upload_files.html'">信息录入</button>
+            <button id="optimize-btn">信息数字化</button>
+        </div>
+        <div id="content-box">
+            <div id="header">
+             
+                <span id="header-title">创建知识库</span>
+            </div>
+          
+    <div id="big-box">
+        <div id="app" class="is-component">
+            <!-- HTML 单选按钮 -->
+            <input type="radio" id="radio1" name="radio" value="1">
+            <label for="radio1">案例</label>
+
+            <input type="radio" id="radio2" name="radio" value="2">
+            <label for="radio2">技术</label>
+
+            <!-- 案例单选按钮对应的 div 1 -->
+            <div id="content-1" class="content-div">
+                <div id="selector1">
+                   <!-- 产业选择器 -->
+                    <label for="industry"></label><select id="industry">
+                        <option value="">请选择产业</option>
+                    </select>
+
+                    <!-- 大类选择器 -->
+                    <label for="broad_class"></label><select id="broad_class">
+                        <option value="">请选择大类</option>
+                    </select>
+
+                    <!-- 小类选择器 -->
+                    <label for="small_class"></label><select id="small_class">
+                        <option value="">请选择小类</option>
+                    </select>
+                </div>
+
+                <!-- 文件上传 -->
+                <div id="upload-container">
+                    <div class="upload-demo" id="drop-area">
+                        <i class="el-icon-upload">+</i>
+                        <div class="el-upload__text">
+                            <p class="upload-text">将文件拖到此处 / <span class="upload-link" id="url-upload-trigger">通过 URL 上传</span> / <span class="upload-link" id="upload-trigger">点击上传</span></p>
+                        </div>
+                        <input type="file" id="file-input" class="hidden" multiple />
+                        <ul id="file-list" class="file-list"></ul>
+                    </div>
+                    <button id="read-button">AI分析</button>
+                </div>
+
+                <!-- 文件内容弹窗 -->
+                <div id="file-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <h3>文件内容:</h3>
+                        <div id="modal-content"></div>
+                    </div>
+                </div>
+
+                <!-- URL 上传弹窗 -->
+                <div id="url-modal" class="url-modal">
+                    <div class="url-modal-content">
+                        <span class="close-url">&times;</span>
+                        <h3>通过 URL 上传</h3>
+                        <input type="text" id="url-input" placeholder="请输入文件的 URL" />
+                        <button id="url-submit">上传</button>
+                    </div>
+                </div>
+
+                <!-- AI 分析文本框 -->
+                <div id="textbox">
+                    <label for="text-box"></label><textarea id="text-box" rows="10" cols="50"></textarea>
+                    <button id="submit">提交</button>
+                </div>
+            </div>
+
+            <!-- 技术单选按钮对应的 div 2 -->
+            <div id="content-2" class="content-div">
+                <!-- 级联选择器 -->
+                <div id="selector2">
+                   <!-- 技术大类选择器 -->
+                    <label for="broad_technology"></label><select id="broad_technology">
+                        <option value="">请选择大类</option>
+                    </select>
+
+                    <!-- 技术小类选择器 -->
+                    <label for="small_technology"></label><select id="small_technology">
+                        <option value="">请选择小类</option>
+                    </select>
+                </div>
+
+                <!-- 文件上传 -->
+                <div id="upload-container-2">
+                    <div class="upload-demo-2" id="drop-area-2">
+                        <i class="el-icon-upload-2">+</i>
+                        <div class="el-upload__text-2">
+                            <p class="upload-text-2">将文件拖到此处 / <span class="upload-link-2" id="url-upload-trigger-2">通过 URL 上传</span> / <span class="upload-link-2" id="upload-trigger-2">点击上传</span></p>
+                        </div>
+                        <input type="file" id="file-input-2" class="hidden-2" multiple />
+                        <ul id="file-list-2" class="file-list-2"></ul>
+                    </div>
+                    <button id="read-button-2">AI分析</button>
+                </div>
+
+                <!-- 文件内容弹窗 -->
+                <div id="file-modal-2" class="modal-2">
+                    <div class="modal-content-2">
+                        <span class="close-2">&times;</span>
+                        <h3>文件内容:</h3>
+                        <div id="modal-content-2"></div>
+                    </div>
+                </div>
+
+                <!-- URL 上传弹窗 -->
+                <div id="url-modal-2" class="url-modal-2">
+                    <div class="url-modal-content-2">
+                        <span class="close-url-2">&times;</span>
+                        <h3>通过 URL 上传</h3>
+                        <input type="text" id="url-input-2" placeholder="请输入文件的 URL" />
+                        <button id="url-submit-2">上传</button>
+                    </div>
+                </div>
+
+                <!-- AI 分析文本框 -->
+                <div id="textbox-2">
+                    <label for="text-box-2"></label><textarea id="text-box-2" rows="10" cols="50"></textarea>
+                    <button id="submit-2">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+     <!-- 登录弹窗 -->
+     <div id="login-modal" class="login-modal">
+        <div class="login-modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h3>管理员登录</h3>
+            <input type="text" id="admin-username" placeholder="账号">
+            <input type="password" id="admin-password" placeholder="密码">
+            <button onclick="checkCredentials()">登录</button>
+        </div>
+    </div>
+    <script>
+        // 打开登录弹窗
+        document.getElementById('optimize-btn').addEventListener('click', function() {
+            closeSidebar();
+            document.getElementById('login-modal').style.display = 'flex';
+        });
+
+        // 关闭登录弹窗
+        function closeLoginModal() {
+            document.getElementById('login-modal').style.display = 'none';
+        }
+
+        // 检查管理员账号和密码
+        function checkCredentials() {
+            var username = document.getElementById('admin-username').value;
+            var password = document.getElementById('admin-password').value;
+            
+            if (username === '123456' && password === '123456') {
+                // 账号密码正确，跳转页面
+                window.location.href = 'upload_files2.html';
+            } else {
+                alert('账号或密码错误');
+            }
+            
+        }
+        function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var toggleButton = document.getElementById('sidebar-toggle');
+    sidebar.classList.add('active');
+    toggleButton.style.display = 'none';
+
+}
+    function closeSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var toggleButton = document.getElementById('sidebar-toggle');
+
+
+    sidebar.classList.remove('active');
+    toggleButton.style.display = 'block';
+  
+}
+
+        
+    </script>
+</body>
+
+</html>
