@@ -221,7 +221,7 @@ $("#su").click(function(){
   const searchtext=$("#sousuo").val();
   console.log(searchtext);
   // var id=item.id;
-  window.location.href = "main.html?isotherserach=1&searchtext=" + encodeURIComponent(searchtext);
+  window.location.href = "index.html?isotherserach=1&searchtext=" + encodeURIComponent(searchtext);
 })
 
 
