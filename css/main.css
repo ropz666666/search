@@ -733,4 +733,7 @@ img {
       #backToTopBtn{
         right: 0;
       }
+      #chat-sidebar{
+            width: 95%;
+          }
 }
