@@ -723,5 +723,8 @@ body {
             width: 35px;
             height: 35px;
         }
+        #chat-sidebar{
+            width: 95%;
+          }
         
     }
