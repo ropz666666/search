@@ -118,47 +118,130 @@ function hideLoading() {
     document.getElementById('loading-container').style.display = 'none';
 }
   
+//   async function callChatAPI(message) {
+//     showLoading();
+//     try {
+//       const response = await fetch('http://127.0.0.1:5000/search', {
+//           method: 'POST',
+//           headers: {
+//               'Content-Type': 'application/json',
+//           },
+//           body: JSON.stringify({ message: message })
+//       });
+
+//       const data = await response.json();
+//       console.log(data.sectors);
+//       return data.sectors;
+//   } catch (error) {
+//       console.error('Error:', error);
+//       return [];
+//   }
+//   finally {
+//     hideLoading(); // 隐藏加载动画
+// }
+// }
+//请求后端服务器
+//不请求后端服务器
   async function callChatAPI(message) {
     showLoading();
     try {
-      const response = await fetch('http://127.0.0.1:5000/search', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ message: message })
+      const response1 = await fetch('https://aithub.com.cn:5040/new', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            // 如果需要其他 headers，可以在这里添加
+        }
       });
+      const data1 = await response1.json();
+      const uid = data1.uid;
+      const body_for_search = {
+        "uid": uid,
+        "query": message
+       };
 
-      const data = await response.json();
-      console.log(data.sectors);
-      return data.sectors;
-  } catch (error) {
-      console.error('Error:', error);
-      return [];
-  }
-  finally {
+       const response2 = await fetch('https://aithub.com.cn:5040/search', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            // 如果需要其他 headers，可以在这里添加
+        },
+        body: JSON.stringify(body_for_search)
+    });
+    const data2 = await response2.json();
+    console.log(data2.sectors);
+    return data2.sectors;
+}
+ catch (error) {
+    console.error('Error:', error);
+    return [];
+} finally {
     hideLoading(); // 隐藏加载动画
 }
 }
 
+
+
+
+//使用代理服务器
+// async function callChatai(message) {
+//   const usermessage = message.trim();
+//   const thinkingMessage = '正在思考中...';
+//  const aireply= addMessage(thinkingMessage, 'ai-message');
+//   try {
+//     const response = await fetch('http://127.0.0.1:5000/chat', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ message: usermessage })
+//     });
+     
+//     const data = await response.json();
+//     console.log(data);
+//     aireply.remove();
+//     // 添加AI的回复
+// addMessage(data.reply,'ai-message');
+//     console.log(data.reply);
+  
+// } catch (error) {
+//     console.error('Error:', error);
+   
+// }
+// }
+//不使用代理服务器
 async function callChatai(message) {
   const usermessage = message.trim();
   const thinkingMessage = '正在思考中...';
  const aireply= addMessage(thinkingMessage, 'ai-message');
   try {
-    const response = await fetch('http://127.0.0.1:5000/chat', {
-        method: 'POST',
+    const response1 = await fetch('https://aithub.com.cn:5040/new', {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+      }
+  });
+
+  const data1 = await response1.json();
+  const uid = data1.uid;
+
+  const body_for_AI = {
+    "uid": uid,
+    "sector_id": 1,
+    "message": usermessage
+};
+    const response3 = await fetch('https://aithub.com.cn:5040/dialogue', {
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: usermessage })
+        body: JSON.stringify(body_for_AI)
     });
      
-    const data = await response.json();
+    const data = await response3.json();
     console.log(data);
     aireply.remove();
     // 添加AI的回复
-addMessage(data.reply,'ai-message');
+    addMessage(data.reply,'ai-message');
     console.log(data.reply);
   
 } catch (error) {
@@ -188,35 +271,35 @@ addMessage(data.reply,'ai-message');
 
 
 
-  async function fetchYiYanAPI(prompt) {
+  // async function fetchYiYanAPI(prompt) {
        
-       const message = prompt.trim();
-       const thinkingMessage = '正在思考中...';
-      const aireply= addMessage(thinkingMessage, 'ai-message');
-        // 调用后端API
-        fetch('http://127.0.0.1:5000/api/ask', { 
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-              // 这里可以添加任何需要的其他头部信息
-          },
-          body: JSON.stringify({ message:message})
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        var answerObject = JSON.parse(data);
-        aireply.remove();
-            // 添加AI的回复
-        addMessage(answerObject.result,'ai-message');
-      })
-      .catch(error => {
-          console.error('Error:', error);
-          // 这里处理错误
-      });
+  //      const message = prompt.trim();
+  //      const thinkingMessage = '正在思考中...';
+  //     const aireply= addMessage(thinkingMessage, 'ai-message');
+  //       // 调用后端API
+  //       fetch('http://127.0.0.1:5000/api/ask', { 
+  //         method: 'POST',
+  //         headers: {
+  //             'Content-Type': 'application/json',
+  //             // 这里可以添加任何需要的其他头部信息
+  //         },
+  //         body: JSON.stringify({ message:message})
+  //     })
+  //     .then(response => response.json())
+  //     .then(data => {
+  //       console.log(data);
+  //       var answerObject = JSON.parse(data);
+  //       aireply.remove();
+  //           // 添加AI的回复
+  //       addMessage(answerObject.result,'ai-message');
+  //     })
+  //     .catch(error => {
+  //         console.error('Error:', error);
+  //         // 这里处理错误
+  //     });
   
   
-  }
+  // }
   document.getElementById('close-btn').addEventListener('click', function() {
       document.getElementById('chat-sidebar').classList.remove('open');
   });
