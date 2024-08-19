@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>创建知识库</title>
-  
-    <link rel="stylesheet" type="text/css" href="css/upload_files.css" />
-    <script type="text/javascript" src="upload_files.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/upload_files.css" />
+    <script type="text/javascript" src="/js/upload_files.js"></script>
     <!-- 引入 mammoth.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
     <!-- 引入 SheetJS -->
@@ -164,6 +163,26 @@
             <button onclick="checkCredentials()">登录</button>
         </div>
     </div>
+   <!-- 提交按钮div -->
+   <div id="loadingOverlay">
+   <div id="loadingSpinner" class="spinner" style="display: none;">
+</div> 
+   </div>
+   <div id="successMessage" class="successMessage" style="display: none;">
+       <div class="submitsuccess">
+           <span class="close">&times;</span>
+           <p>提交成功！</p>
+       </div>
+   </div>
+   <div id="successMessage2" class="successMessage2" style="display: none;">
+    <div class="submitsuccess">
+        <span class="close">&times;</span>
+        <p>数字信息化成功！</p>
+    </div>
+</div>
+
+
+
     <script>
         // 打开登录弹窗
         document.getElementById('optimize-btn').addEventListener('click', function() {
