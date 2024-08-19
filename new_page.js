@@ -200,52 +200,41 @@ $(document).ready(async function() {
       return messageDiv;
   }
 
-//   async function fetchYiYanAPI(prompt) {
-//     const message = prompt.trim();
-//     const thinkingMessage = '正在思考中...';
-//    const aireply= addMessage(thinkingMessage, 'ai-message');
-//      // 调用后端API
-//      fetch('http://127.0.0.1:5000/api/ask', { 
-//        method: 'POST',
-//        headers: {
-//            'Content-Type': 'application/json',
-//            // 这里可以添加任何需要的其他头部信息
-//        },
-//        body: JSON.stringify({ message:message})
-//    })
-//    .then(response => response.json())
-//    .then(data => {
-//      console.log(data);
-//      var answerObject = JSON.parse(data);
-//      aireply.remove();
-//          // 添加AI的回复
-//      addMessage(answerObject.result,'ai-message');
-//    })
-//    .catch(error => {
-//        console.error('Error:', error);
-//        // 这里处理错误
-//    });
 
 
-// }
 async function callChatai(message) {
   const usermessage = message.trim();
   const thinkingMessage = '正在思考中...';
  const aireply= addMessage(thinkingMessage, 'ai-message');
   try {
-    const response = await fetch('http://127.0.0.1:5000/chat', {
-        method: 'POST',
+    const response1 = await fetch('https://aithub.com.cn:5040/new', {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+      }
+  });
+
+  const data1 = await response1.json();
+  const uid = data1.uid;
+
+  const body_for_AI = {
+    "uid": uid,
+    "sector_id": 1,
+    "message": usermessage
+};
+    const response3 = await fetch('https://aithub.com.cn:5040/dialogue', {
+        method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: usermessage })
+        body: JSON.stringify(body_for_AI)
     });
      
-    const data = await response.json();
+    const data = await response3.json();
     console.log(data);
     aireply.remove();
     // 添加AI的回复
-addMessage(data.reply,'ai-message');
+    addMessage(data.reply,'ai-message');
     console.log(data.reply);
   
 } catch (error) {
@@ -256,34 +245,97 @@ addMessage(data.reply,'ai-message');
 
 
 
+
+
+
+
+
 var sectorsdata;
-async function callSectors(id) {
+//使用代理服务器
+// async function callSectors(id) {
  
-  try {
-    const response = await fetch('http://127.0.0.1:5000/sectors', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id: id })
-    });
+//   try {
+//     const response = await fetch('http://127.0.0.1:5000/sectors', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ id: id })
+//     });
 
-    sectorsdata = await response.json();
-    console.log(sectorsdata);
-    populateContainer('container-1',  sectorsdata.response_1.cases);
-    populateContent(sectorsdata.response_4);
-    return sectorsdata;
-} catch (error) {
-    console.error('Error:', error);
-    return [];
-}
-finally{
+//     sectorsdata = await response.json();
+//     console.log(sectorsdata);
+//     populateContainer('container-1',  sectorsdata.response_1.cases);
+//     populateContent(sectorsdata.response_4);
+//     return sectorsdata;
+// } catch (error) {
+//     console.error('Error:', error);
+//     return [];
+// }
+// finally{
   
-  hideing();
+//   hideing();
 
+// }
+
+// }
+async function callSectors(id) {
+  const method1 = 'near' 
+  const method2 = 'mid'
+  const method3 = 'far'
+  const method4 = 'detail'
+  try {
+      // 使用 Promise.all 并行请求四个 API
+      const [data1, data2, data3, data4] = await Promise.all([
+          fetch(`https://aithub.com.cn:5040/case/${id}?method=${method1}`, {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+              }
+          }).then(res => res.json()),
+
+          fetch(`https://aithub.com.cn:5040/case/${id}?method=${method2}`, {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+              }
+          }).then(res => res.json()),
+
+          fetch(`https://aithub.com.cn:5040/case/${id}?method=${method3}`, {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+              }
+          }).then(res => res.json()),
+
+          fetch(`https://aithub.com.cn:5040/case/${id}?method=${method4}`, {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+              }
+          }).then(res => res.json())
+      ]);
+
+      sectorsdata = {
+          "response_1": data1,
+          "response_2": data2,
+          "response_3": data3,
+          "response_4": data4
+      };
+
+      console.log(sectorsdata);
+      populateContainer('container-1', sectorsdata.response_1.cases);
+      populateContent(sectorsdata.response_4);
+      return sectorsdata;
+
+  } catch (error) {
+      console.error('Error:', error);
+      return [];
+  } finally {
+      hideing();
+  }
 }
 
-}
 
 
 
