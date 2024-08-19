@@ -216,7 +216,7 @@ option {
 }
 .file-list-item {
     margin: 5px 0;
-    display: flex;
+    /* display: flex; */
     justify-content: space-between;
     align-items: center;
 }
@@ -228,7 +228,7 @@ option {
 .file-list-item span:hover {
     text-decoration: underline;
 }
-.file-list-item .delete-btn {
+.file-list-item .delete-btn,.file-list-item-2 .delete-btn{
     background: #ff4d4f;
     border: none;
     color: white;
@@ -236,7 +236,7 @@ option {
     padding: 5px 10px;
     cursor: pointer;
 }
-.file-list-item .delete-btn:hover {
+.file-list-item .delete-btn:hover,.file-list-item-2 .delete-btn:hover{
     background: #e43d3d;
 }
 .hidden {
@@ -260,10 +260,16 @@ option {
     top: 0;
     width: 100%;
     height: 100%;
+   
     overflow: auto;
     background-color: rgba(0,0,0,0.5); /* 胶囊遮罩 */
 }
-.modal-content, .url-modal-content {
+.modal-content{
+   
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translate(-50%,0);
     background-color: #fefefe;
     margin: 15% auto;
     padding: 20px;
@@ -271,10 +277,32 @@ option {
     width: 80%;
     max-width: 800px;
 }
+.url-modal-content,.url-modal-content-2{
+   
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%,0);
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 800px;
+}
+.modal-content h3{
+    padding-bottom: 5px;
+}
+#modal-content{
+    max-height: 80vh;  /* 设置模态框内容的最大高度 */
+    overflow-y: auto;  /* 使内容在超过高度时可以垂直滚动 */
+}
 .close, .close-url {
+    position: absolute;
     color: #aaa;
-    float: right;
-    font-size: 28px;
+   top:0px;
+   right:10px;
+    font-size: 35px;
     font-weight: bold;
 }
 .close:hover, .close:focus, .close-url:hover, .close-url:focus {
@@ -294,7 +322,8 @@ th, td {
     text-align: left;
 }
 .url-modal-content input[type="text"] {
-    width: 100%;
+
+    width: 95%;
     padding: 8px;
     margin-top: 10px;
 }
@@ -342,7 +371,7 @@ th, td {
 }
 .file-list-item-2 {
     margin: 5px 0;
-    display: flex;
+    /* display: flex; */
     justify-content: space-between;
     align-items: center;
 }
@@ -389,7 +418,7 @@ th, td {
     overflow: auto;
     background-color: rgba(0,0,0,0.5); /* 胶囊遮罩 */
 }
-.modal-content-2, .url-modal-content-2 {
+.modal-content-2{
     background-color: #fefefe;
     margin: 15% auto;
     padding: 20px;
@@ -420,7 +449,7 @@ th, td {
     text-align: left;
 }
 .url-modal-content-2 input[type="text"] {
-    width: 100%;
+    width: 95%;
     padding: 8px;
     margin-top: 10px;
 }
@@ -494,6 +523,95 @@ th, td {
 #sidebar button:hover {
     background-color: #0099cc;
 }
+/* 旋转动画的样式 */
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.alert {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px;
+    background-color: #f2b632; /* A warm amber color */
+    color: #ffffff;
+    font-size: 16px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    opacity: 0;
+    animation: fadeInOut 4s ease-in-out;
+}
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8); /* 半透明灰白色背景 */
+    z-index: 9999; /* 确保遮罩层在最上层 */
+    display: none;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none; /* 禁止遮罩层下的元素接收点击事件 */
+} 
+button#url-submit,button#url-submit-2{
+    margin: 10px 0;
+   
+    background-color: #00aaff;
+}
+/* Fade-in and fade-out animation */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translate(-50%, -60%); }
+    10% { opacity: 1; transform: translate(-50%, -50%); }
+    90% { opacity: 1; transform: translate(-50%, -50%); }
+    100% { opacity: 0; transform: translate(-50%, -60%); }
+}
+
+
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 弹出提示框的样式 */
+.successMessage,.successMessage2{
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+}
+
+.submitsuccess .close {
+    color: #aaa;
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.modal-content .close:hover {
+    color: #000;
+}
+
+
 
 @media screen and (max-width: 768px) {
     #sidebar {
@@ -506,7 +624,15 @@ th, td {
     #content-box{
         width: 80%;
     }
-
+    .modal-content{
+   
+   
+        top: 0%;
+     
+    }
+    .url-modal-content {
+        top: 20%;
+    }
     #sidebar-toggle {
         display: block;
         position: fixed;
@@ -530,6 +656,17 @@ th, td {
        
         width: 100%;
       
+    }
+
+    .modal-content, .url-modal-content {
+        
+        width: 85%;
+      
+    }
+    .modal, .url-modal {
+     
+        top:0;
+     
     }
     
 }
