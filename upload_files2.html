@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>数据优化</title>
-    <link rel="stylesheet" type="text/css" href="css/upload_files.css" />
-    <link rel="stylesheet" type="text/css" href="css/upload_files2.css" />
+    <link rel="stylesheet" type="text/css" href="/css/upload_files.css" />
+    <link rel="stylesheet" type="text/css" href="/css/upload_files2.css" />
     <script src="jquery.js"></script>
-    <script type="text/javascript" src="upload_files2.js"></script>
+    <script type="text/javascript" src="/js/upload_files2.js"></script>
     
     <style>
 
@@ -40,6 +40,16 @@
         </div>
     </div>
     </div>
+    <div id="loadingOverlay">
+        <div id="loadingSpinner" class="spinner" style="display: none;">
+     </div> 
+        </div>
+        <div id="successMessage" class="successMessage" style="display: none;">
+            <div class="submitsuccess">
+                <span class="close">&times;</span>
+                <p>提交成功！</p>
+            </div>
+        </div>
     <script>
         function toggleSidebar() {
     var sidebar = document.getElementById('sidebar');
