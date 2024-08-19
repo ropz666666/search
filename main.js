@@ -155,6 +155,7 @@ async function callChatai(message) {
     });
      
     const data = await response.json();
+    console.log(data);
     aireply.remove();
     // 添加AI的回复
 addMessage(data.reply,'ai-message');
