@@ -235,14 +235,6 @@ window.onload = function () {
     });
    
 
-//     uploadTrigger.addEventListener('click', function() {
-//         fileInput.click();
-//     });
-// +
-    // urlUploadTrigger.addEventListener('click', function() {
-    //     urlModal.style.display = 'block'; // 显示 URL 上传弹窗
-    // });
-
     fileInput.addEventListener('change', function(event) {
         const newFiles = Array.from(event.target.files);
             files = files.concat(newFiles);
@@ -374,19 +366,26 @@ window.onload = function () {
         document.getElementById('loadingOverlay').style.display = 'flex';
         loadingSpinner.style.display = 'block';
           if(isurl){
-            const url=urlInput.value.trim();
-            fetch('http://127.0.0.1:5000/case_urlUpload', { // 替换为实际的 API 端点
+            const url = urlInput.value.trim();
+            const dataToSend = JSON.stringify(url);
+            fetch('https://aithub.com.cn:5040/case/url', { // 使用目标服务器的 API 端点
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',  // 发送 JSON 数据
+        
                 },
-                body: JSON.stringify({ url:url })
+                body:dataToSend
             })
             .then(response => response.json())
             .then(data => {
                 console.log('文件已发送到大模型:', data);
-                console.log(data);
-                textBox.value=data.analysis;
+                if (data.error != null) {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    loadingSpinner.style.display = 'none';
+                    showAlert('分析失败，请检查网络。');
+                    return;
+                }
+                textBox.value = data.analysis;
                 aiAnalysisSuccess = true;
                 document.getElementById('loadingOverlay').style.display = 'none';
                 loadingSpinner.style.display = 'none';
@@ -401,19 +400,25 @@ window.onload = function () {
           else{
            
             const file = files[0];
-            const filePath = file.webkitRelativePath || file.name;
-          
-            fetch('http://127.0.0.1:5000/case_filesUpload', { // 替换为实际的 API 端点
+            console.log(file);
+            
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('https://aithub.com.cn:5040/case/file', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',  // 发送 JSON 数据
-                },
-                body: JSON.stringify({ file_path: filePath })
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
                 console.log('文件已发送到大模型:', data);
                 console.log(data);
+                if(data.error!=null)
+                    { document.getElementById('loadingOverlay').style.display = 'none';
+                        loadingSpinner.style.display = 'none';
+                        showAlert('分析失败，请检查网络。');
+                        return
+                    }
                 textBox.value=data.analysis;
                 aiAnalysisSuccess = true;
                 document.getElementById('loadingOverlay').style.display = 'none';
@@ -421,7 +426,7 @@ window.onload = function () {
             })
             .catch(error => {
                 console.error('通过 URL 上传文件时出错:', error);
-                alert('无法通过 URL 上传文件，请检查 URL 是否有效。');
+               showAlert('分析失败，请检查网络。');
                 document.getElementById('loadingOverlay').style.display = 'none';
                 loadingSpinner.style.display = 'none';
             });
@@ -432,14 +437,20 @@ window.onload = function () {
     urlSubmitButton.addEventListener('click', function() {
         const url = urlInput.value.trim();
         if (url) {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            loadingSpinner.style.display = 'block';
             fetch(url)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('网络响应错误: ' + response.status);
                 }
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
                 return response.blob();
             })
             .then(blob => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
                 const fileName = url.split('/').pop() || 'unknown_file';
                 const file = new File([blob], fileName);
 
@@ -453,6 +464,8 @@ window.onload = function () {
                 }
             })
             .catch(error => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
                 console.error('通过 URL 上传文件时出错:', error);
                 alert('无法通过 URL 上传文件，请检查 URL 是否有效或是否启用了跨域资源共享。');
             });
@@ -533,21 +546,21 @@ window.onload = function () {
 
         // 获取文本框的值
         const textValue = textBox.value;
-
-        // 创建FormData对象
-        // const formData = new FormData();
-        // formData.append('industry', industryValue);
-        // formData.append('broad_class', broadClassValue);
-        // formData.append('small_class', smallClassValue);
-        // formData.append('text', textValue);
+          
+        const bodyForCaseUpload = {
+            sector: industryValue,
+            division: broadClassValue,
+            subsector:smallClassValue,
+            text: textValue
+        };
 
         // 使用fetch发送数据到后端API
-        fetch('http://127.0.0.1:5000/case_submit', { // 替换为实际的API端点
+        fetch('https://aithub.com.cn:5040/case', { // 替换为实际的API端点
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',  // 发送 JSON 数据
             },
-            body: JSON.stringify({sector: industryValue,division:broadClassValue,subsector:smallClassValue,text: textValue})
+            body: JSON.stringify(bodyForCaseUpload)
         })
         .then(response => response.json())
         .then(data => {
@@ -767,8 +780,9 @@ window.onload = function () {
         }
     });
     
+
     // 文件传入到后端 agent API
-    readButton2.addEventListener('click', function() {
+     readButton2.addEventListener('click', function() {
         if (files2.length === 0) {
             showAlert('请先上传文件。');
             return;
@@ -776,19 +790,27 @@ window.onload = function () {
         document.getElementById('loadingOverlay').style.display = 'flex';
         loadingSpinner.style.display = 'block';
           if(isurl2){
-            const url=urlInput2.value.trim();
-            fetch('http://127.0.0.1:5000/case_urlUpload', { // 替换为实际的 API 端点
+            const url = urlInput2.value.trim();
+            const dataToSend = JSON.stringify(url);
+            fetch('https://aithub.com.cn:5040/case/url', { // 使用目标服务器的 API 端点
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',  // 发送 JSON 数据
+                    // 如果需要认证，请添加Authorization头部
+                    // 'Authorization': 'Bearer ' + token,
                 },
-                body: JSON.stringify({ url:url })
+                body:dataToSend
             })
             .then(response => response.json())
             .then(data => {
                 console.log('文件已发送到大模型:', data);
-                console.log(data);
-                textBox2.value=data.analysis;
+                if (data.error != null) {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    loadingSpinner.style.display = 'none';
+                    showAlert('分析失败，请检查网络。');
+                    return;
+                }
+                textBox2.value = data.analysis;
                 aiAnalysisSuccess2 = true;
                 document.getElementById('loadingOverlay').style.display = 'none';
                 loadingSpinner.style.display = 'none';
@@ -803,19 +825,25 @@ window.onload = function () {
           else{
            
             const file = files2[0];
-            const filePath = file.webkitRelativePath || file.name;
-          
-            fetch('http://127.0.0.1:5000/case_filesUpload', { // 替换为实际的 API 端点
+            console.log(file);
+            
+            var formData = new FormData();
+            formData.append('file', file);
+
+            fetch('https://aithub.com.cn:5040/case/file', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',  // 发送 JSON 数据
-                },
-                body: JSON.stringify({ file_path: filePath })
+                body: formData
             })
             .then(response => response.json())
             .then(data => {
                 console.log('文件已发送到大模型:', data);
                 console.log(data);
+                if(data.error!=null)
+                    { document.getElementById('loadingOverlay').style.display = 'none';
+                        loadingSpinner.style.display = 'none';
+                        showAlert('分析失败，请检查网络。');
+                        return
+                    }
                 textBox2.value=data.analysis;
                 aiAnalysisSuccess2 = true;
                 document.getElementById('loadingOverlay').style.display = 'none';
@@ -823,7 +851,7 @@ window.onload = function () {
             })
             .catch(error => {
                 console.error('通过 URL 上传文件时出错:', error);
-                alert('无法通过 URL 上传文件，请检查 URL 是否有效。');
+               showAlert('分析失败，请检查网络。');
                 document.getElementById('loadingOverlay').style.display = 'none';
                 loadingSpinner.style.display = 'none';
             });
@@ -833,10 +861,13 @@ window.onload = function () {
 
     urlSubmit2Button.addEventListener('click', function() {
         const url = urlInput2.value.trim();
-        if (url) {
+        if (url) { document.getElementById('loadingOverlay').style.display = 'block';
+            loadingSpinner.style.display = 'block';
             fetch(url)
                 .then(response => response.blob())
                 .then(blob => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    loadingSpinner.style.display = 'none';
                     const file = new File([blob], url.split('/').pop());
                     files2.push(file);
                     updateFileList2();
@@ -844,10 +875,13 @@ window.onload = function () {
                     urlModal2.style.display = 'none'; // 隐藏 URL 弹窗
                 })
                 .catch(error => {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    loadingSpinner.style.display = 'none';
                     console.error('通过 URL 上传文件时出错:', error);
                     alert('无法通过 URL 上传文件，请检查 URL 是否有效。');
                 });
         } else {
+            
             alert('请输入文件的 URL。');
         }
     });
@@ -884,19 +918,17 @@ window.onload = function () {
 
         // 获取文本框的值
         const text2Value = textBox2.value;
-        console.log(broadTechnologyValue)
-        console.log(smallTechnologyValue)
-        console.log(text2Value)
-        console.log(typeof broadTechnologyValue)
-        console.log(typeof smallTechnologyValue)
-        console.log(typeof text2Value)
+        const bodyForCaseUpload = {
+            title:broadTechnologyValue, classification:smallTechnologyValue,description:text2Value
+        };
+       
         // 使用fetch发送数据到后端API
-        fetch('http://127.0.0.1:5000/technology_submit', { // 替换为实际的API端点
+        fetch('https://aithub.com.cn:5040/technology', { // 替换为实际的API端点
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',  // 发送 JSON 数据
             },
-            body: JSON.stringify({title:broadTechnologyValue, classification:smallTechnologyValue,description:text2Value})
+            body: JSON.stringify(bodyForCaseUpload)
         })
         .then(response => response.json())
         .then(data => {
