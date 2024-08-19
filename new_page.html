@@ -6,7 +6,7 @@
     <title>师大搜索引擎</title>
     <link rel="stylesheet" type="text/css" href="css/new_page.css" />
     <script src="jquery.js"></script>
-    <script type="module" src="new_page.js"></script>
+    <script type="module" src="/js/new_page.js"></script>
 </head>
 <style>
     .loading::after {
@@ -82,13 +82,14 @@
                 </div>
             </div>
             </div>
-            <div id="related_content" >
+            <div id="related_content" class="related_tech">
                 <div id="aisearch"><h3>相关技术与内容</h3></div>
          
-                <div class="list-item">
+                <!-- <div class="list-item">
                     <div class="so-items-normal">
                     <div class="item-hd">
                         <h3 class="title substr"></h3>
+                        <h4 class="classification"></h4>
                     </div>
                     <div class="item-bd">
                         <div class="item-bd_cont">
@@ -120,7 +121,7 @@
                 </div>
             </div>
             </div>
-                </div>  
+                </div>   -->
                
             </div>
             
@@ -141,28 +142,16 @@
                 </button>
             </div>
             <br>
-            <div class="container">
-                <div class="incontainer">
-                    案例内容1
-                    <hr>
-                    未来展望1
-                    <!-- <button class="ooo">o</button> -->
-                </div>
-                <br>
-                <div class="incontainer">
-                    案例内容2
-                    <hr>
-                    未来展望2
-                    <!-- <button class="ooo">o</button> -->
-                </div>
-                <br>
-                <div class="incontainer">
-                    案例内容3
-                    <hr>
-                    未来展望3
-                    <!-- <button class="ooo">o</button> -->
-                </div>
+            <div class="container" id="container-1">
+               
             </div>
+            <div class="container" id="container-2" style="display: none;">
+               
+            </div>
+            <div class="container" id="container-3" style="display: none;">
+               
+            </div>
+          
         </div>
         <button class="top openleftbutton">
             <svg t="1723001742415" class="icon" class="flip-svg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5880" xmlns:xlink="http://www.w3.org/1999/xlink" width="15" height="15"><path d="M0 153.6h1024V256H0zM0 460.8h614.4v102.4H0zM0 768h614.4v102.4H0zM819.2 460.8v409.6L1024 665.6z" fill="#242424" p-id="5881"></path></svg>
