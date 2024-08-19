@@ -1,6 +1,46 @@
 // JavaScript 代码来处理单选按钮的逻辑
 document.addEventListener('DOMContentLoaded', function () {
+    // const optimize_btn=document.getElementById('optimize-btn');
+    // const successMessage2 = document.getElementById('successMessage2');
+    // const closesuccessButton2 = successMessage2.querySelector('.close');
+    // optimize_btn.addEventListener('click', function() {
+    //     document.getElementById('loadingOverlay').style.display = 'flex';
+    //     loadingSpinner.style.display = 'block';
+    //     fetch('http://127.0.0.1:5000/case_submit', { // 替换为实际的API端点
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',  // 发送 JSON 数据
+    //         },
+    //         body: JSON.stringify({sector: industryValue,division:broadClassValue,subsector:smallClassValue,text: textValue})
+    //     })
+        
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log('数据已发送到后端：', data);
+    //           // 隐藏加载动画
+    //     document.getElementById('loadingOverlay').style.display = 'none';
+    //     loadingSpinner.style.display = 'none';
+        
+    //     // 显示提交成功的提示框
+    //     successMessage2.style.display = 'block';
+    //      // 提交成功后的逻辑
+    //      resetPage();
+    //         // 这里可以添加处理成功响应的代码
+    //     })
+    //     .catch(error => {
+    //         showAlert('分析失败，请检查网络。');
+    //         document.getElementById('loadingOverlay').style.display = 'none';
+    //         loadingSpinner.style.display = 'none';
+    //         // 无论成功与否都隐藏加载动画
+          
+    //     });
     
+
+
+    // })
+    // closesuccessButton2.addEventListener('click', function() {
+    //     successMessage2.style.display = 'none';
+    // });
     // 获取所有单选按钮
     const radioButtons = document.querySelectorAll('input[type="radio"]');
 
@@ -93,7 +133,7 @@ window.onload = function () {
     };
 
     // 获取三个选择器元素
-    var industrySelect = document.getElementById('industry');
+    var industrySelect   = document.getElementById('industry');
     var broadClassSelect = document.getElementById('broad_class');
     var smallClassSelect = document.getElementById('small_class');
 
@@ -143,21 +183,71 @@ window.onload = function () {
     const urlInput = document.getElementById('url-input');
     const urlSubmitButton = document.getElementById('url-submit');
     const closeUrlButton = document.querySelector('.close-url');
+    const textBox = document.getElementById('text-box');
+    
+
+
     let files = [];
-    let selectedFileIndex = null;
-
-    uploadTrigger.addEventListener('click', function() {
-        fileInput.click();
+    let selectedFileIndex = 0;
+    var aiAnalysisSuccess = false; // 用于跟踪 AI 分析是否成功
+    var isurl=false;
+    function showAlert(message) {
+        // 创建一个简单的提示框
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert';
+        alertDiv.textContent = message;
+        document.body.appendChild(alertDiv);
+        
+        // 自动隐藏提示框
+        setTimeout(() => {
+            document.body.removeChild(alertDiv);
+        },3000);
+    }
+    function resetPage() {
+        files = [];
+        files2 = [];
+        updateFileList();
+        updateFileList2();
+        textBox.value = '';
+        textBox2.value = '';
+        aiAnalysisSuccess = false;
+        aiAnalysisSuccess2 = false;
+        industrySelect.value = ''; 
+        broadClassSelect.value = '';
+        broadClassSelect.value = '';
+        broadTechnologySelect.value='';
+        smallTechnologySelect.value='';
+        isurl=false;
+    }
+    uploadTrigger.addEventListener('click', function () {
+        if (files.length > 0) {
+            showAlert('只能上传一个文件，若想重新上传请删除之前的文件。');
+        } else {
+            fileInput.click();
+        }
     });
-
-    urlUploadTrigger.addEventListener('click', function() {
-        urlModal.style.display = 'block'; // 显示 URL 上传弹窗
+    urlUploadTrigger.addEventListener('click', function () {
+        if (files.length > 0) {
+            showAlert('只能上传一个文件，若想重新上传请删除之前的文件。');
+        } else {
+            urlModal.style.display = 'block';
+        }
     });
+   
+
+//     uploadTrigger.addEventListener('click', function() {
+//         fileInput.click();
+//     });
+// +
+    // urlUploadTrigger.addEventListener('click', function() {
+    //     urlModal.style.display = 'block'; // 显示 URL 上传弹窗
+    // });
 
     fileInput.addEventListener('change', function(event) {
         const newFiles = Array.from(event.target.files);
-        files = files.concat(newFiles);
-        updateFileList();
+            files = files.concat(newFiles);
+            updateFileList();
+            isUrl = false;  // 设置标志为false
     });
 
     document.getElementById('drop-area').addEventListener('dragover', function(event) {
@@ -237,7 +327,8 @@ window.onload = function () {
                                 modalContentElement.appendChild(table);
                             }
                         });
-                    } else {
+                    } 
+                    else {
                         modalContentElement.textContent = '仅支持文本 (.txt)、Word (.docx)、Excel (.xlsx) 和 CSV (.csv) 文件。';
                     }
                     fileModal.style.display = 'block'; // 显示弹窗
@@ -276,76 +367,131 @@ window.onload = function () {
 
     // 文件传入到后端 agent API
     readButton.addEventListener('click', function() {
-        if (selectedFileIndex !== null) {
-            const file = files[selectedFileIndex];
-            const formData = new FormData();
-            formData.append('file', file);
-
-            fetch('YOUR_API_ENDPOINT', { // 替换为实际的 API 端点
+        if (files.length === 0) {
+            showAlert('请先上传文件。');
+            return;
+        }
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        loadingSpinner.style.display = 'block';
+          if(isurl){
+            const url=urlInput.value.trim();
+            fetch('http://127.0.0.1:5000/case_urlUpload', { // 替换为实际的 API 端点
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',  // 发送 JSON 数据
+                },
+                body: JSON.stringify({ url:url })
             })
             .then(response => response.json())
             .then(data => {
                 console.log('文件已发送到大模型:', data);
+                console.log(data);
+                textBox.value=data.analysis;
+                aiAnalysisSuccess = true;
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
             })
-            .catch(error => console.error('Error:', error));
-        } else {
-            alert('请先选择文件');
-        }
+            .catch(error => {
+                console.error('通过 URL 上传文件时出错:', error);
+                showAlert('分析失败，请检查网络。');
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
+            });
+          }
+          else{
+           
+            const file = files[0];
+            const filePath = file.webkitRelativePath || file.name;
+          
+            fetch('http://127.0.0.1:5000/case_filesUpload', { // 替换为实际的 API 端点
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',  // 发送 JSON 数据
+                },
+                body: JSON.stringify({ file_path: filePath })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('文件已发送到大模型:', data);
+                console.log(data);
+                textBox.value=data.analysis;
+                aiAnalysisSuccess = true;
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('通过 URL 上传文件时出错:', error);
+                alert('无法通过 URL 上传文件，请检查 URL 是否有效。');
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
+            });
+        
+          }
     });
 
     urlSubmitButton.addEventListener('click', function() {
         const url = urlInput.value.trim();
         if (url) {
             fetch(url)
-                .then(response => response.blob())
-                .then(blob => {
-                    const file = new File([blob], url.split('/').pop());
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('网络响应错误: ' + response.status);
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const fileName = url.split('/').pop() || 'unknown_file';
+                const file = new File([blob], fileName);
+
+                if (files.length > 0) {
+                    showAlert('只能上传一个文件，若想重新上传请删除之前的文件。');
+                } else {
                     files.push(file);
                     updateFileList();
                     urlModal.style.display = 'none'; // 隐藏 URL 弹窗
-                })
-                .catch(error => {
-                    console.error('通过 URL 上传文件时出错:', error);
-                    alert('无法通过 URL 上传文件，请检查 URL 是否有效。');
-                });
-        } else {
-            alert('请输入文件的 URL。');
-        }
+                    isurl=true;   
+                }
+            })
+            .catch(error => {
+                console.error('通过 URL 上传文件时出错:', error);
+                alert('无法通过 URL 上传文件，请检查 URL 是否有效或是否启用了跨域资源共享。');
+            });
+    } else {
+        alert('请输入文件的 URL。');
+    }
     });
 
 // 从后端获取文本，还需要与后端结合进行调试
     // 获取文本框元素
-    const textBox = document.getElementById('text-box');
+    
 
     // 获取按钮元素。点击 “ AI 分析 ” 按钮后会直接通过 API 从后端获取 agent 返回的文本，需要考虑实际 agent 的相应速度。
     const getTextButton = document.getElementById('read-button');
 
     // “ AI 分析 ” 按钮点击事件
-    getTextButton.addEventListener('click', function() {
-        // 创建XMLHttpRequest对象
-        var xhr = new XMLHttpRequest();
+    // getTextButton.addEventListener('click', function() {
+    //     // 创建XMLHttpRequest对象
+    //     var xhr = new XMLHttpRequest();
 
-        // 设置请求类型、URL、以及是否异步处理请求
-        xhr.open('GET', '/api/text', true);
+    //     // 设置请求类型、URL、以及是否异步处理请求
+    //     xhr.open('GET', '/api/text', true);
 
-        // 设置发送请求时的内容类型
-        xhr.setRequestHeader('Content-Type', 'application/json');
+    //     // 设置发送请求时的内容类型
+    //     xhr.setRequestHeader('Content-Type', 'application/json');
 
-        // 当请求完成时触发事件
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                // 解析返回的JSON数据
-                var response = JSON.parse(xhr.responseText);
-                // 将文本内容设置到文本框中
-                textBox.value = response.text;
-            }
-        };
+    //     // 当请求完成时触发事件
+    //     xhr.onreadystatechange = function() {
+    //         if (xhr.readyState === 4 && xhr.status === 200) {
+    //             // 解析返回的JSON数据
+    //             var response = JSON.parse(xhr.responseText);
+    //             // 将文本内容设置到文本框中
+    //             textBox.value = response.text;
+    //         }
+    //     };
 
-        // 发送请求
-        xhr.send();
-    });
+    //     // 发送请求
+    //     xhr.send();
+    // });
 
     /* 从后端获取文本的后端代码的实例
     const express = require('express');
@@ -365,10 +511,22 @@ window.onload = function () {
 // 将三个选择器的分类和文本框中的文本传送到后端
     // 获取按钮元素
     const submitButton = document.getElementById('submit');
-
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const successMessage = document.getElementById('successMessage');
+     const closesuccessButton = successMessage.querySelector('.close');
     // “ 提交 ” 按钮点击事件
     submitButton.addEventListener('click', function() {
+        if (!aiAnalysisSuccess) {
+            showAlert('请先执行 AI 分析。');
+            return;
+        }
+        if (!industrySelect.value || !broadClassSelect.value || !smallClassSelect.value) {
+            showAlert('请确保所有步骤都已成功完成。');
+            return;
+        }
         // 获取选择器的值
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        loadingSpinner.style.display = 'block';
         const industryValue = industrySelect.value;
         const broadClassValue = broadClassSelect.value;
         const smallClassValue = smallClassSelect.value;
@@ -377,30 +535,49 @@ window.onload = function () {
         const textValue = textBox.value;
 
         // 创建FormData对象
-        const formData = new FormData();
-        formData.append('industry', industryValue);
-        formData.append('broad_class', broadClassValue);
-        formData.append('small_class', smallClassValue);
-        formData.append('text', textValue);
+        // const formData = new FormData();
+        // formData.append('industry', industryValue);
+        // formData.append('broad_class', broadClassValue);
+        // formData.append('small_class', smallClassValue);
+        // formData.append('text', textValue);
 
         // 使用fetch发送数据到后端API
-        fetch('YOUR_API_ENDPOINT', { // 替换为实际的API端点
+        fetch('http://127.0.0.1:5000/case_submit', { // 替换为实际的API端点
             method: 'POST',
-            body: formData
+            headers: {
+                'Content-Type': 'application/json',  // 发送 JSON 数据
+            },
+            body: JSON.stringify({sector: industryValue,division:broadClassValue,subsector:smallClassValue,text: textValue})
         })
         .then(response => response.json())
         .then(data => {
             console.log('数据已发送到后端：', data);
+              // 隐藏加载动画
+        document.getElementById('loadingOverlay').style.display = 'none';
+        loadingSpinner.style.display = 'none';
+
+        // 显示提交成功的提示框
+        successMessage.style.display = 'block';
+         // 提交成功后的逻辑
+         resetPage();
             // 这里可以添加处理成功响应的代码
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            showAlert('提交失败，请检查网络。');
+            document.getElementById('loadingOverlay').style.display = 'none';
+            // 无论成功与否都隐藏加载动画
+            loadingSpinner.style.display = 'none';
+        });
+    });
+    closesuccessButton.addEventListener('click', function() {
+        successMessage.style.display = 'none';
     });
 
 
 // 技术级联选择器逻辑
     // 数据结构
     var data = {
-        '机器学习': ['监督学习', '无监督学习', '强化学习'],
+        '机器学习': ['监督学习','无监督学习','强化学习'],
         '深度学习': ['人工神经网络', '卷积神经网络', '循环神经网络(RNN)', '生成对抗网络', '变分自编码器'],
         '自然语言处理': ['词汇语义学', '句法解析', '文本生成', '情感分析', '对话系统'],
         '语音识别': ['语音识别框架', 'CTC(连接主义时序分类)', 'Seq2seq深度学习模型架构', '注意力机制', '端到端学习'],
@@ -448,20 +625,31 @@ window.onload = function () {
     const urlInput2 = document.getElementById('url-input-2');
     const urlSubmit2Button = document.getElementById('url-submit-2');
     const closeUrl2Button = document.querySelector('.close-url-2');
+    const textBox2 = document.getElementById('text-box-2');
+    var aiAnalysisSuccess2 = false; // 用于跟踪 AI 分析是否成功
     let files2 = [];
     let selectedFileIndex2 = null;
-
-    uploadTrigger2.addEventListener('click', function() {
-        fileInput2.click();
+    var aiAnalysisSuccess2=false;
+    var isurl2=false;
+    urlUploadTrigger2.addEventListener('click', function () {
+        if (files2.length > 0) {
+            showAlert('只能上传一个文件，若想重新上传请删除之前的文件。');
+        } else {
+            urlModal2.style.display = 'block';
+        }
     });
-
-    urlUploadTrigger2.addEventListener('click', function() {
-        urlModal2.style.display = 'block'; // 显示 URL 上传弹窗
+    uploadTrigger2.addEventListener('click', function () {
+        if (files2.length > 0) {
+            showAlert('只能上传一个文件，若想重新上传请删除之前的文件。');
+        } else {
+            fileInput2.click();
+        }
     });
-
+  
     fileInput2.addEventListener('change', function(event) {
         const newFiles = Array.from(event.target.files);
         files2 = files2.concat(newFiles);
+        isurl2=false;
         updateFileList2();
     });
 
@@ -578,26 +766,69 @@ window.onload = function () {
             urlModal2.style.display = 'none'; // 隐藏 URL 弹窗
         }
     });
-
+    
     // 文件传入到后端 agent API
     readButton2.addEventListener('click', function() {
-        if (selectedFileIndex2 !== null) {
-            const file = files2[selectedFileIndex2];
-            const formData = new FormData();
-            formData.append('file', file);
-
-            fetch('YOUR_API_ENDPOINT', { // 替换为实际的 API 端点
+        if (files2.length === 0) {
+            showAlert('请先上传文件。');
+            return;
+        }
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        loadingSpinner.style.display = 'block';
+          if(isurl2){
+            const url=urlInput2.value.trim();
+            fetch('http://127.0.0.1:5000/case_urlUpload', { // 替换为实际的 API 端点
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',  // 发送 JSON 数据
+                },
+                body: JSON.stringify({ url:url })
             })
             .then(response => response.json())
             .then(data => {
                 console.log('文件已发送到大模型:', data);
+                console.log(data);
+                textBox2.value=data.analysis;
+                aiAnalysisSuccess2 = true;
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
             })
-            .catch(error => console.error('Error:', error));
-        } else {
-            alert('请先选择文件');
-        }
+            .catch(error => {
+                console.error('通过 URL 上传文件时出错:', error);
+                showAlert('分析失败，请检查网络。');
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
+            });
+          }
+          else{
+           
+            const file = files2[0];
+            const filePath = file.webkitRelativePath || file.name;
+          
+            fetch('http://127.0.0.1:5000/case_filesUpload', { // 替换为实际的 API 端点
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',  // 发送 JSON 数据
+                },
+                body: JSON.stringify({ file_path: filePath })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('文件已发送到大模型:', data);
+                console.log(data);
+                textBox2.value=data.analysis;
+                aiAnalysisSuccess2 = true;
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
+            })
+            .catch(error => {
+                console.error('通过 URL 上传文件时出错:', error);
+                alert('无法通过 URL 上传文件，请检查 URL 是否有效。');
+                document.getElementById('loadingOverlay').style.display = 'none';
+                loadingSpinner.style.display = 'none';
+            });
+        
+          }
     });
 
     urlSubmit2Button.addEventListener('click', function() {
@@ -609,6 +840,7 @@ window.onload = function () {
                     const file = new File([blob], url.split('/').pop());
                     files2.push(file);
                     updateFileList2();
+                    isurl2=true;
                     urlModal2.style.display = 'none'; // 隐藏 URL 弹窗
                 })
                 .catch(error => {
@@ -622,66 +854,73 @@ window.onload = function () {
 
 // 从后端获取文本，还需要与后端结合进行调试
     // 获取文本框元素
-    const textBox2 = document.getElementById('text-box-2');
+
 
     // 获取按钮元素。点击 “ AI 分析 ” 按钮后会直接通过 API 从后端获取 agent 返回的文本，需要考虑实际 agent 的相应速度。
-    const getText2Button = document.getElementById('read-button-2');
+   
 
-    // “ AI 分析 ” 按钮点击事件
-    getText2Button.addEventListener('click', function() {
-        // 创建XMLHttpRequest对象
-        var xhr2 = new XMLHttpRequest();
 
-        // 设置请求类型、URL、以及是否异步处理请求
-        xhr2.open('GET', '/api/text', true);
 
-        // 设置发送请求时的内容类型
-        xhr2.setRequestHeader('Content-Type', 'application/json');
 
-        // 当请求完成时触发事件
-        xhr2.onreadystatechange = function() {
-            if (xhr2.readyState === 4 && xhr2.status === 200) {
-                // 解析返回的JSON数据
-                var response = JSON.parse(xhr2.responseText);
-                // 将文本内容设置到文本框中
-                textBox2.value = response.text;
-            }
-        };
 
-        // 发送请求
-        xhr2.send();
-    });
 
-// 将两个选择器的分类和文本框中的文本传送到后端
-    // 获取按钮元素
     const submit2Button = document.getElementById('submit-2');
 
     // “ 提交 ” 按钮点击事件
     submit2Button.addEventListener('click', function() {
+        if (!aiAnalysisSuccess2) {
+            showAlert('请先执行 AI 分析。');
+            return;
+        }
+        if (!broadTechnologySelect.value|| !smallTechnologySelect.value) {
+            showAlert('请确保所有步骤都已成功完成。');
+            return;
+        }
+          document.getElementById('loadingOverlay').style.display = 'flex';
+        loadingSpinner.style.display = 'block'
         // 获取选择器的值
         const broadTechnologyValue = broadTechnologySelect.value;
         const smallTechnologyValue = smallTechnologySelect.value;
 
         // 获取文本框的值
         const text2Value = textBox2.value;
-
-        // 创建FormData对象
-        const formData = new FormData();
-        formData.append('broadTechnology', broadTechnologyValue);
-        formData.append('smallTechnology', smallTechnologyValue);
-        formData.append('text', text2Value);
-
+        console.log(broadTechnologyValue)
+        console.log(smallTechnologyValue)
+        console.log(text2Value)
+        console.log(typeof broadTechnologyValue)
+        console.log(typeof smallTechnologyValue)
+        console.log(typeof text2Value)
         // 使用fetch发送数据到后端API
-        fetch('YOUR_API_ENDPOINT', { // 替换为实际的API端点
+        fetch('http://127.0.0.1:5000/technology_submit', { // 替换为实际的API端点
             method: 'POST',
-            body: formData
+            headers: {
+                'Content-Type': 'application/json',  // 发送 JSON 数据
+            },
+            body: JSON.stringify({title:broadTechnologyValue, classification:smallTechnologyValue,description:text2Value})
         })
         .then(response => response.json())
         .then(data => {
             console.log('数据已发送到后端：', data);
+              // 隐藏加载动画
+        document.getElementById('loadingOverlay').style.display = 'none';
+        loadingSpinner.style.display = 'none';
+
+        // 显示提交成功的提示框
+        successMessage.style.display = 'block';
+         // 提交成功后的逻辑
+         resetPage();
             // 这里可以添加处理成功响应的代码
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+            showAlert('提交失败，请检查网络。');
+    
+            // 无论成功与否都隐藏加载动画
+            document.getElementById('loadingOverlay').style.display = 'none';
+        loadingSpinner.style.display = 'none';
+        });
+    });
+    closesuccessButton.addEventListener('click', function() {
+        successMessage.style.display = 'none';
     });
 }
 
