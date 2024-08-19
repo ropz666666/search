@@ -23,12 +23,12 @@ function showAlert(message) {
 function fetchData() {
     document.getElementById('loadingOverlay').style.display = 'flex';
     loadingSpinner.style.display = 'block';
-    fetch('http://127.0.0.1:5000/manage_reflash', { // 替换为实际的API端点
-        method: 'POST',
+    fetch('https://aithub.com.cn:5040/managements', { // 替换为实际的API端点
+        method: 'GET',
         headers: {
             'Content-Type': 'application/json',  // 发送 JSON 数据
         },
-        body: JSON.stringify({})
+       
     })
     .then(response => response.json())
     .then(data => {
@@ -86,12 +86,12 @@ function submitData() {
     {
         document.getElementById('loadingOverlay').style.display = 'flex';
         loadingSpinner.style.display = 'block';
-    fetch('http://127.0.0.1:5000/manage_submit', { // 替换为实际的API端点
+    fetch('https://aithub.com.cn:5040/managements', { // 替换为实际的API端点
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',  // 发送 JSON 数据
         },
-        body: JSON.stringify({})
+    
     })
     .then(response => response.json())
     .then(data => {
