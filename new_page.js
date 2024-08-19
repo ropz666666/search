@@ -32,43 +32,98 @@ $(document).ready(async function() {
 
 
     var isfirstopensidebar=true;
-    async function fetchData(id) {
-      try {
-          const response = await fetch('http://127.0.0.1:5000/search', {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ id: id })
-          });
+  //   async function fetchData(id) {
+  //     try {
+  //         const response = await fetch('http://127.0.0.1:5000/idsearch', {
+  //             method: 'POST',
+  //             headers: {
+  //                 'Content-Type': 'application/json',
+  //             },
+  //             body: JSON.stringify({ id: id })
+  //         });
                 
-          const data = await response.json();
-          return data.sectors[0]; // Assuming the sectors array contains the relevant data
-      } catch (error) {
-          console.error('Error fetching data:', error);
-          return null;
-      }
-      finally{
-        hideing();
-      }
-  }
-  function populateContent(data) {
-    if (data) {
+  //         const data = await response.json();
+  //         console.log(data.case)
+  //         return data.case; // Assuming the sectors array contains the relevant data
+  //     } catch (error) {
+  //         console.error('Error fetching data:', error);
+  //         return null;
+  //     }
+    
+  // }
+  function populateContent(response) {
+    if (response) {
+      const data=response.case;
+      const relatetech=response.tech;
+      console.log(data);
+      console.log(relatetech);
         document.getElementById('content_title').textContent = data.title || '未提供标题';
         document.getElementById('content_description').textContent = data.description || '未提供描述';
-        document.getElementById('.case_solution p').textContent = data.solution || '未提供案例分析';
+        document.querySelector('.case_solution p').textContent = data.solution || '未提供案例分析';
         document.querySelector('.future_view p').textContent = data.future_view || '未提供未来展望';
+     
+        const listContainer = document.querySelector('.related_tech'); // 假设你有一个 .list-container 用于放置这些 items
+       // 遍历 tech 数组，生成 HTML 并插入到容器中
+       relatetech.forEach(item => {
+  // 创建 list-item 的 div
+        const listItem = document.createElement('div');
+        listItem.className = 'list-item';
+
+        // 创建 so-items-normal 的 div
+        const soItemsNormal = document.createElement('div');
+        soItemsNormal.className = 'so-items-normal';
+
+  // 创建 item-hd 的 div
+  const itemHd = document.createElement('div');
+  itemHd.className = 'item-hd';
+
+  // 创建 h3 的 title 并赋值
+  const titleElement = document.createElement('h3');
+  titleElement.className = 'title substr';
+  titleElement.textContent = item.title;
+
+  // 创建 h4 的 classification 并赋值
+  const classificationElement = document.createElement('h4');
+  classificationElement.className = 'classification';
+  classificationElement.textContent = item.classification;
+
+  // 创建 item-bd 的 div
+  const itemBd = document.createElement('div');
+  itemBd.className = 'item-bd';
+
+  // 创建 item-bd_cont 的 div
+  const itemBdCont = document.createElement('div');
+  itemBdCont.className = 'item-bd_cont';
+
+  // 创建 p 的 row2 并赋值
+  const row2Element = document.createElement('p');
+  row2Element.className = 'row2';
+  row2Element.textContent = item.description;
+
+  // 将元素组合在一起
+  itemHd.appendChild(titleElement);
+  itemHd.appendChild(classificationElement);
+  itemBdCont.appendChild(row2Element);
+  itemBd.appendChild(itemBdCont);
+  soItemsNormal.appendChild(itemHd);
+  soItemsNormal.appendChild(itemBd);
+  listItem.appendChild(soItemsNormal);
+
+  // 将 list-item 插入到容器中
+  listContainer.appendChild(listItem);
+});
+
+
     } else {
         console.error('No data available to populate');
     }
 
   
 }
-
   const id = getIdFromUrl();
     if (id) {
-        const data = await fetchData(id);
-        populateContent(data);
+       console.log(id);
+       callSectors(id);    
     } else {
         console.error('No ID provided in the URL');
     }
@@ -80,13 +135,7 @@ $(document).ready(async function() {
     document.getElementById('close-btn').addEventListener('click', function() {
       document.getElementById('chat-sidebar').classList.remove('open');
   });
-      const incontainers=document.querySelectorAll('.incontainer');
-      incontainers.forEach(function(item){
-         item.addEventListener("click",function()
-        {
-          alert(1);
-        })
-      })
+  
       
       window.onscroll = function() {
         var backToTopBtn = document.getElementById("backToTopBtn");
@@ -151,41 +200,108 @@ $(document).ready(async function() {
       return messageDiv;
   }
 
-  async function fetchYiYanAPI(prompt) {
-    const message = prompt.trim();
-    const thinkingMessage = '正在思考中...';
-   const aireply= addMessage(thinkingMessage, 'ai-message');
-     // 调用后端API
-     fetch('http://127.0.0.1:5000/api/ask', { 
-       method: 'POST',
-       headers: {
-           'Content-Type': 'application/json',
-           // 这里可以添加任何需要的其他头部信息
-       },
-       body: JSON.stringify({ message:message})
-   })
-   .then(response => response.json())
-   .then(data => {
-     console.log(data);
-     var answerObject = JSON.parse(data);
-     aireply.remove();
-         // 添加AI的回复
-     addMessage(answerObject.result,'ai-message');
-   })
-   .catch(error => {
-       console.error('Error:', error);
-       // 这里处理错误
-   });
+//   async function fetchYiYanAPI(prompt) {
+//     const message = prompt.trim();
+//     const thinkingMessage = '正在思考中...';
+//    const aireply= addMessage(thinkingMessage, 'ai-message');
+//      // 调用后端API
+//      fetch('http://127.0.0.1:5000/api/ask', { 
+//        method: 'POST',
+//        headers: {
+//            'Content-Type': 'application/json',
+//            // 这里可以添加任何需要的其他头部信息
+//        },
+//        body: JSON.stringify({ message:message})
+//    })
+//    .then(response => response.json())
+//    .then(data => {
+//      console.log(data);
+//      var answerObject = JSON.parse(data);
+//      aireply.remove();
+//          // 添加AI的回复
+//      addMessage(answerObject.result,'ai-message');
+//    })
+//    .catch(error => {
+//        console.error('Error:', error);
+//        // 这里处理错误
+//    });
 
+
+// }
+async function callChatai(message) {
+  const usermessage = message.trim();
+  const thinkingMessage = '正在思考中...';
+ const aireply= addMessage(thinkingMessage, 'ai-message');
+  try {
+    const response = await fetch('http://127.0.0.1:5000/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: usermessage })
+    });
+     
+    const data = await response.json();
+    console.log(data);
+    aireply.remove();
+    // 添加AI的回复
+addMessage(data.reply,'ai-message');
+    console.log(data.reply);
+  
+} catch (error) {
+    console.error('Error:', error);
+   
+}
+}
+
+
+
+var sectorsdata;
+async function callSectors(id) {
+ 
+  try {
+    const response = await fetch('http://127.0.0.1:5000/sectors', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: id })
+    });
+
+    sectorsdata = await response.json();
+    console.log(sectorsdata);
+    populateContainer('container-1',  sectorsdata.response_1.cases);
+    populateContent(sectorsdata.response_4);
+    return sectorsdata;
+} catch (error) {
+    console.error('Error:', error);
+    return [];
+}
+finally{
+  
+  hideing();
 
 }
+
+}
+
+
+
+
+
+
+
+
+
+
+
 document.getElementById('send-btn').addEventListener('click', send);
 function send() {
   
   const userInput = $('#user-input').val();
     if (userInput.trim() !== '') {
         addMessage(userInput, 'user-message');
-        fetchYiYanAPI(userInput);
+       callChatai(userInput);
         document.getElementById('user-input').value = ''; // 清空输入框
         textarea.style.height =37+'px';
       
@@ -223,6 +339,56 @@ $("#su").click(function(){
   // var id=item.id;
   window.location.href = "index.html?isotherserach=1&searchtext=" + encodeURIComponent(searchtext);
 })
+//近中远迁移
+function populateContainer(containerId, cases) {
+  const container = document.querySelector(`#${containerId}`);
+  container.innerHTML = '';  // 清空已有内容
+  let i=1;
+  cases.forEach(c => {
+     if(i<=3)
+     {const caseDiv = document.createElement('div');
+      caseDiv.className = 'incontainer';
+      
+      caseDiv.innerHTML = `
+          <h2>${c.title}</h2>
+          <p class="row">${c.description}</p>
+        
+      `;
+       caseDiv.addEventListener('click',function(){
+        var id=c.id;
+        window.location.href = "new_page.html?id=" + encodeURIComponent(id);
+       })
+      container.appendChild(caseDiv);
+      i++;
+     }
+  });
+
+}
+
+
+// 按钮点击事件
+document.querySelector('.button-near').addEventListener('click', () => {
+    document.getElementById('container-1').style.display = 'block';
+    document.getElementById('container-2').style.display = 'none';
+    document.getElementById('container-3').style.display = 'none';
+    populateContainer('container-1', sectorsdata.response_1.cases);
+});
+
+document.querySelector('.button-middle').addEventListener('click', () => {
+    document.getElementById('container-1').style.display = 'none';
+    document.getElementById('container-2').style.display = 'block';
+    document.getElementById('container-3').style.display = 'none';
+    populateContainer('container-2',sectorsdata.response_2.cases);
+});
+
+document.querySelector('.button-far').addEventListener('click', () => {
+    document.getElementById('container-1').style.display = 'none';
+    document.getElementById('container-2').style.display = 'none';
+    document.getElementById('container-3').style.display = 'block';
+    populateContainer('container-3', sectorsdata.response_3.cases);
+});
+
+
 
 
 });
@@ -238,10 +404,10 @@ $("#su").click(function(){
       $('#loading-animation').fadeOut(function() {
         $('#htmlbackground').css('display', 'block');
         $('#search_cotent').css('display', 'block');
-          $('#content_title').text(data.title);
-          $('#content_description').text(data.description);
-          $('.case_solution p').text(data.solution);
-          $('.future_view p').text(data.future_view);
+          $('#content_title').text();
+          $('#content_description').text();
+          $('.case_solution p').text();
+          $('.future_view p').text();
         
       });
     }
