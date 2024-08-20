@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>创建知识库</title>
-    <link rel="stylesheet" type="text/css" href="upload_files.css?v=1.0" />
-    <script type="text/javascript" src="upload_files.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/upload_files.css?v=1.0" />
+    <script type="text/javascript" src="/js/upload_files.js"></script>
     <!-- 引入 mammoth.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
     <!-- 引入 SheetJS -->
@@ -21,7 +21,7 @@
             <button id="sidebar-close" onclick="closeSidebar()">关闭菜单</button>
             <button id="return-btn" onclick="window.location.href='index.html'">返回主界面</button>
             <button onclick="window.location.href='upload_files.html'">信息录入</button>
-            <button id="optimize-btn">信息数字化</button>
+            <!-- <button id="optimize-btn">信息数字化</button> -->
         </div>
         <div id="content-box">
             <div id="header">
@@ -67,17 +67,19 @@
                         <input type="file" id="file-input" class="hidden" multiple />
                         <ul id="file-list" class="file-list"></ul>
                     </div>
-                    <button id="read-button">AI分析</button>
+                    <!-- <button id="read-button">AI分析</button> -->
+                    <button id="nextpage">下一步</button>
                 </div>
 
                 <!-- 文件内容弹窗 -->
-                <div id="file-modal" class="modal">
+                <!-- <div id="file-modal" class="modal">
                     <div class="modal-content">
                         <span class="close">&times;</span>
                         <h3>文件内容:</h3>
                         <div id="modal-content"></div>
+                           <button id="submit">提交</button>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- URL 上传弹窗 -->
                 <div id="url-modal" class="url-modal">
@@ -90,11 +92,14 @@
                 </div>
 
                 <!-- AI 分析文本框 -->
-                <div id="textbox">
+                <!-- <div id="textbox">
                     <label for="text-box"></label><textarea id="text-box" rows="10" cols="50"></textarea>
                     <button id="submit">提交</button>
-                </div>
+                </div> -->
+                <!-- 文件内容弹窗 -->
+            
             </div>
+            
 
             <!-- 技术单选按钮对应的 div 2 -->
             <div id="content-2" class="content-div">
@@ -121,17 +126,10 @@
                         <input type="file" id="file-input-2" class="hidden-2" multiple />
                         <ul id="file-list-2" class="file-list-2"></ul>
                     </div>
-                    <button id="read-button-2">AI分析</button>
+                    <button id="nextpage-2">下一步</button>
                 </div>
 
-                <!-- 文件内容弹窗 -->
-                <div id="file-modal-2" class="modal-2">
-                    <div class="modal-content-2">
-                        <span class="close-2">&times;</span>
-                        <h3>文件内容:</h3>
-                        <div id="modal-content-2"></div>
-                    </div>
-                </div>
+           
 
                 <!-- URL 上传弹窗 -->
                 <div id="url-modal-2" class="url-modal-2">
@@ -143,15 +141,51 @@
                     </div>
                 </div>
 
-                <!-- AI 分析文本框 -->
-                <div id="textbox-2">
-                    <label for="text-box-2"></label><textarea id="text-box-2" rows="10" cols="50"></textarea>
+               
+             
+            </div>
+            <!-- <div id="file-modal-2" class="modal-2">
+                <div class="modal-content-2">
+                    <span class="close-2">&times;</span>
+                    <h3>文件内容:</h3>
+                    <div id="modal-content-2"></div>
                     <button id="submit-2">提交</button>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
+    
         </div>
+        <div id="file-modal" class="modal">
+            <div id="header">
+                <span id="header-title">文件内容</span>
+            
+                <button id="delete-btn" class="filedelete-btn">删除文件</button>
+            </div>
+            <div class="modal-content">
+                <!-- <span class="close">&times;</span> -->
+               <div id="modal-content">
+               </div>
+              
+               <button id="submit">提交</button>
+               <button id="backlastpage">返回上一页</button>
+               </div>
+            </div>
+            <div id="file-modal-2" class="modal">
+                <div id="header">
+                    <span id="header-title">文件内容</span>
+                
+                    <button id="delete-btn" class="filedelete-btn-2">删除文件</button>
+                </div>
+                <div class="modal-content">
+                    <!-- <span class="close">&times;</span> -->
+                   <div id="modal-content-2">
+                   </div>
+                  
+                   <button id="submit-2">提交</button>
+                   <button id="backlastpage-2">返回上一页</button>
+                   </div>
+                </div>
     </div>
      <!-- 登录弹窗 -->
      <div id="login-modal" class="login-modal">
@@ -165,8 +199,13 @@
     </div>
    <!-- 提交按钮div -->
    <div id="loadingOverlay">
-   <div id="loadingSpinner" class="spinner" style="display: none;">
-</div> 
+   <div id="loadingSpinner" class="spinner" style="display: none;"></div>
+    <div id="uploadProgressBarContainer" style="display: none;">
+        <div id="uploadProgressBar" >
+            <span id="progressText">0%</span>
+        </div>
+    </div>
+
    </div>
    <div id="successMessage" class="successMessage" style="display: none;">
        <div class="submitsuccess">
@@ -185,29 +224,29 @@
 
     <script>
         // 打开登录弹窗
-        document.getElementById('optimize-btn').addEventListener('click', function() {
-            closeSidebar();
-            document.getElementById('login-modal').style.display = 'flex';
-        });
+        // document.getElementById('optimize-btn').addEventListener('click', function() {
+        //     closeSidebar();
+        //     document.getElementById('login-modal').style.display = 'inline';
+        // });
 
-        // 关闭登录弹窗
-        function closeLoginModal() {
-            document.getElementById('login-modal').style.display = 'none';
-        }
+        // // 关闭登录弹窗
+        // function closeLoginModal() {
+        //     document.getElementById('login-modal').style.display = 'none';
+        // }
 
-        // 检查管理员账号和密码
-        function checkCredentials() {
-            var username = document.getElementById('admin-username').value;
-            var password = document.getElementById('admin-password').value;
+        // // 检查管理员账号和密码
+        // function checkCredentials() {
+        //     var username = document.getElementById('admin-username').value;
+        //     var password = document.getElementById('admin-password').value;
             
-            if (username === '123456' && password === '123456') {
-                // 账号密码正确，跳转页面
-                window.location.href = 'upload_files2.html';
-            } else {
-                alert('账号或密码错误');
-            }
+        //     if (username === '123456' && password === '123456') {
+        //         // 账号密码正确，跳转页面
+        //         window.location.href = 'upload_files2.html';
+        //     } else {
+        //         alert('账号或密码错误');
+        //     }
             
-        }
+        // }
         function toggleSidebar() {
     var sidebar = document.getElementById('sidebar');
     var toggleButton = document.getElementById('sidebar-toggle');
