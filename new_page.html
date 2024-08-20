@@ -6,7 +6,7 @@
     <title>师大搜索引擎</title>
     <link rel="stylesheet" type="text/css" href="css/new_page.css" />
     <script src="jquery.js"></script>
-    <script type="module" src="new_page.js"></script>
+    <script type="module" src="/js/new_page.js"></script>
 </head>
 <style>
     .loading::after {
@@ -128,9 +128,20 @@
         </div>
         <div id="leftcontainer">
             <div class="header">
-                <button class="top button-near">近</button>
+                <!-- <button class="top button-near">近</button>
                 <button class="top button-middle">中</button>
-                <button class="top button-far">远</button>
+                <button class="top button-far">远</button> -->
+                <div class="temperature-container">
+                    <label for="temperatureSlider">温度：</label>
+                    <div class="tooltip">
+                        <span class="tooltip-icon">?</span>
+                        <span class="tooltip-text">
+                            temperature: 较高的数值会使输出更加随机，而较低的数值会使其更加集中和确定。建议该参数和 top_p 只设置 1。
+                        </span>
+                    </div>
+                    <input type="range" id="temperatureSlider" min="0" max="1" step="0.05" value="0.1">
+                    <input type="text" id="temperatureInput" value="0.1" />
+                </div>
             </div>
             <div class="menu">
                 <button class="top">
@@ -142,26 +153,30 @@
                 </button>
             </div>
             <br>
+           
             <div class="container" id="container-1">
                
             </div>
-            <div class="container" id="container-2" style="display: none;">
+            <div class="container" id="container-2">
                
             </div>
-            <div class="container" id="container-3" style="display: none;">
+            <div class="container" id="container-3">
                
             </div>
           
         </div>
-        <button class="top openleftbutton">
-            <svg t="1723001742415" class="icon" class="flip-svg" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5880" xmlns:xlink="http://www.w3.org/1999/xlink" width="15" height="15"><path d="M0 153.6h1024V256H0zM0 460.8h614.4v102.4H0zM0 768h614.4v102.4H0zM819.2 460.8v409.6L1024 665.6z" fill="#242424" p-id="5881"></path></svg>
-        </button>
-            <button id="open-btn">
-                <img src="image/chatlogo.png">
-            </button>
+        <div class="marquee" id="openleftbutton" style="display: none;">
+            <span>举一反三看这里！ 更多金点子！ 这里有更多内容！</span>
+        </div>
+        <div id="character-container" style="display: none;">
+            <img id="character-img" src="image/chatbot.gif" alt="数字人">
+            <div id="speech-bubble" class="hidden">
+                点击我可以和我聊天哦！
+            </div>
+        </div>
             <div id="chat-sidebar">
                 <div id="chat-title">
-                  <h2>Sapper对话助手</h2>
+                  <h2>智能对话助手</h2>
                   <button id="close-btn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 10.8477L16.6091 6.23864C16.9273 5.92045 17.4432 5.92045 17.7614 6.23864C18.0795 6.55683 18.0795 7.07272 17.7614 7.39091L13.1523 12L17.7614 16.6091C18.0795 16.9273 18.0795 17.4432 17.7614 17.7614C17.4432 18.0795 16.9273 18.0795 16.6091 17.7614L12 13.1523L7.39091 17.7614C7.07272 18.0795 6.55683 18.0795 6.23864 17.7614C5.92045 17.4432 5.92045 16.9273 6.23864 16.6091L10.8477 12L6.23864 7.39091C5.92045 7.07272 5.92045 6.55683 6.23864 6.23864C6.55683 5.92045 7.07272 5.92045 7.39091 6.23864L12 10.8477Z" fill="#6D5FFD"></path></svg></button>
               </div>
                   <div id="chat-box">
@@ -169,7 +184,7 @@
                       </div>
                   </div>
                   <div id="input-container">
-                    <textarea rows="1" autoHeight="true"  id="user-input" placeholder="输入消息...(按ctrl+enter发送消息)"></textarea>
+                    <textarea rows="1" autoHeight="true"    id="user-input" placeholder="输入消息...(按ctrl+enter发送消息)"></textarea>
                     <button id="send-btn">发送</button>
                 </div>
               </div>
