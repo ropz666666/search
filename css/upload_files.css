@@ -12,6 +12,7 @@
         z-index: 0;
         min-width: 320px; /* 移动设备的常见最小宽度 */
         width: 100%; /* 自适应宽度 */
+        height: 100vh;
     }
 
 #gray-background {
@@ -21,17 +22,21 @@
     height: 100vh;
     background-color: #f0f0f0;
     padding: 20px;
+    z-index: 1001;
+
 }
 #content-box {
     position: absolute;
-   top: 5%;
+    top: 5%;
+    left: 15%;
     background-color: white;
-    width: 30%;
+    width: 450px;
     padding: 20px;
     height: 700px;
     border: 1px solid #ddd;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
+    transition: width 0.3s; 
 }
 #header {
     display: flex;
@@ -69,6 +74,8 @@ button#read-button, button#read-button-2{
 }
 
 button#submit,button#submit-2 {
+    margin-top: 10px;
+   float: right;
     background-color: #00aaff; /* 天蓝色背景 */
 }
 
@@ -228,13 +235,32 @@ option {
 .file-list-item span:hover {
     text-decoration: underline;
 }
-.file-list-item .delete-btn,.file-list-item-2 .delete-btn{
+.file-list-item .delete-btn,.file-list-item-2 .delete-btn,#header #delete-btn{
     background: #ff4d4f;
     border: none;
     color: white;
     border-radius: 4px;
     padding: 5px 10px;
     cursor: pointer;
+}
+#backlastpage,#nextpage,#nextpage-2,#backlastpage-2{
+    font-size: 14px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s, transform 0.3s;
+    background-color:#00aaff;
+   
+}
+#nextpage,#nextpage-2{
+    float: right;
+}
+#header #delete-btn{
+    position: absolute;
+    right: 2%;
 }
 .file-list-item .delete-btn:hover,.file-list-item-2 .delete-btn:hover{
     background: #e43d3d;
@@ -251,8 +277,9 @@ option {
 #file-content pre {
     white-space: pre-wrap; /* 处理长文本的换行 */
 }
+
 /* 弹窗样式 */
-.modal, .url-modal {
+.url-modal {
     display: none; /* 默认隐藏 */
     position: fixed;
     z-index: 1000;
@@ -264,21 +291,28 @@ option {
     overflow: auto;
     background-color: rgba(0,0,0,0.5); /* 胶囊遮罩 */
 }
-.modal-content{
-   
+.modal{
+
     position: absolute;
-    top: -20%;
-    left: 50%;
-    transform: translate(-50%,0);
-    background-color: #fefefe;
-    margin: 15% auto;
+    right: 5%;
+    top: 5%;
+    width: 50%; /* 或其他适当宽度 */
+    height: 700px;
     padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 800px;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
 }
+.modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
 .url-modal-content,.url-modal-content-2{
-   
     position: absolute;
     top: 10%;
     left: 50%;
@@ -291,11 +325,34 @@ option {
     max-width: 800px;
 }
 .modal-content h3{
-    padding-bottom: 5px;
+    font-size: 18px;
+    color: #333;
 }
-#modal-content{
-    max-height: 80vh;  /* 设置模态框内容的最大高度 */
-    overflow-y: auto;  /* 使内容在超过高度时可以垂直滚动 */
+#modal-content,#modal-content-2{
+    max-height: 60vh; /* 最大高度，避免遮挡内容 */
+    overflow-y: auto;
+    padding: 20px;
+    border: 1px solid #ddd; /* 边框 */
+    border-radius: 5px; /* 圆角边框 */
+    background-color: #ffffff; /* 背景色 */
+}
+.content-box {
+    width: 200px; /* 或你想要的窄条宽度 */
+    height: 100%; /* 保持原高度不变 */
+    overflow-y: auto; /* 纵向滚动条 */
+    overflow-x: hidden; /* 禁止横向滚动条 */
+    padding: 10px; /* 内边距 */
+    box-sizing: border-box; /* 包含边框和内边距在宽度和高度内 */
+    border: 1px solid #ddd; /* 边框 */
+    border-radius: 5px; /* 圆角边框 */
+    background-color: #f9f9f9; /* 背景色 */
+    transition: all 0.3s ease; /* 平滑过渡效果 */
+}
+
+/* 选中时突出显示 */
+.content-box:focus-within {
+    border-color: #007bff; /* 高亮边框色 */
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* 高亮阴影 */
 }
 .close, .close-url {
     position: absolute;
@@ -321,7 +378,7 @@ th, td {
     padding: 8px;
     text-align: left;
 }
-.url-modal-content input[type="text"] {
+.url-modal-content input[type="text"],.url-modal-content-2 input[type="text"]{
 
     width: 95%;
     padding: 8px;
@@ -448,11 +505,7 @@ th, td {
     padding: 8px;
     text-align: left;
 }
-.url-modal-content-2 input[type="text"] {
-    width: 95%;
-    padding: 8px;
-    margin-top: 10px;
-}
+
 
  /* 登录弹窗样式 */
  .login-modal {
@@ -461,12 +514,16 @@ th, td {
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
     justify-content: center;
     align-items: center;
 }
 .login-modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
     background: white;
     padding: 20px;
     border-radius: 5px;
@@ -562,7 +619,7 @@ th, td {
     display: none;
     justify-content: center;
     align-items: center;
-    pointer-events: none; /* 禁止遮罩层下的元素接收点击事件 */
+    pointer-events: auto; 
 } 
 button#url-submit,button#url-submit-2{
     margin: 10px 0;
@@ -582,6 +639,32 @@ button#url-submit,button#url-submit-2{
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+#uploadProgressBarContainer {
+    width: 60%;
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#uploadProgressBar {
+    width: 0%; 
+    height: 30px;
+    background-color: #3498db;
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.2s ease;
+}
+#progressText {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-weight: bold;
 }
 
 /* 弹出提示框的样式 */
@@ -622,15 +705,15 @@ button#url-submit,button#url-submit-2{
         left: 0; /* 显示侧边栏 */
     }
     #content-box{
+        margin-top: 10px;
         width: 80%;
+        left: 5%;
     }
     .modal-content{
-   
-   
         top: 0%;
      
     }
-    .url-modal-content {
+    .url-modal-content,.url-modal-content-2{
         top: 20%;
     }
     #sidebar-toggle {
@@ -658,15 +741,44 @@ button#url-submit,button#url-submit-2{
       
     }
 
-    .modal-content, .url-modal-content {
+   .url-modal-content,.url-modal-content-2 {
         
         width: 85%;
       
     }
-    .modal, .url-modal {
+    .url-modal {
      
         top:0;
      
+    }
+    #gray-background{
+        max-height: 100vh;
+        padding: 0px;
+    }
+    .modal {
+        width: 85%; /* 调整为适合小屏幕的宽度 */
+        height: 80%; /* 取消固定高度，让内容决定高度 */
+        /* 调整位置居中 */
+         /* 调整位置居中 */
+         margin-top: 10px;
+         left: 3%;
+        padding: 15px; /* 减少填充以适应较小屏幕 */
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* 适度减少阴影 */
+    }
+  
+    #modal-content,#modal-content-2 {
+        
+        max-height:65vh; /* 减少最大高度以适应小屏幕 */
+        padding: 15px; /* 减少填充 */
+        font-size: 14px; /* 调整字体大小 */
+    }
+
+    .modal-content h3 {
+        font-size: 16px; /* 调整标题字体大小 */
+    }
+    #uploadProgressBarContainer {
+        width: 80%;
+      
     }
     
 }
@@ -676,7 +788,10 @@ button#url-submit,button#url-submit-2{
     #sidebar-toggle {
         display: none;
     }
-
+    #backlastpage,#nextpage,#nextpage-2,#backlastpage-2{
+   
+        display: none;
+    }
 
     #sidebar {
         left: 0;
