@@ -131,8 +131,9 @@ $(document).ready(async function() {
 
 
 
-    document.getElementById('open-btn').addEventListener('click', opensidebar);
+    document.getElementById('character-container').addEventListener('click', opensidebar);
     document.getElementById('close-btn').addEventListener('click', function() {
+      $('#character-container').css("display","block");
       document.getElementById('chat-sidebar').classList.remove('open');
   });
   
@@ -171,7 +172,7 @@ $(document).ready(async function() {
     })
     var isfirstopensidebar=true;
     function opensidebar() {
-      
+      $('#character-container').css("display","none");
       console.log(11);
       document.getElementById('chat-sidebar').classList.add('open');
       if(isfirstopensidebar===true)
@@ -325,6 +326,8 @@ async function callSectors(id) {
 
       console.log(sectorsdata);
       populateContainer('container-1', sectorsdata.response_1.cases);
+      populateContainer('container-2', sectorsdata.response_2.cases);
+      populateContainer('container-3', sectorsdata.response_3.cases);
       populateContent(sectorsdata.response_4);
       return sectorsdata;
 
@@ -368,7 +371,7 @@ document.getElementById('user-input').addEventListener('keydown', function(event
 });
 
 
-   document.querySelector('.openleftbutton').addEventListener('click', openleftsidebar);
+   document.getElementById('openleftbutton').addEventListener('click', openleftsidebar);
   document.querySelector('.menu button').addEventListener('click', function() {
   document.getElementById('leftcontainer').classList.remove('openleft'); 
     $('#openleftbutton').css("display","block");
@@ -418,29 +421,77 @@ function populateContainer(containerId, cases) {
 }
 
 
-// 按钮点击事件
-document.querySelector('.button-near').addEventListener('click', () => {
-    document.getElementById('container-1').style.display = 'block';
-    document.getElementById('container-2').style.display = 'none';
-    document.getElementById('container-3').style.display = 'none';
-    populateContainer('container-1', sectorsdata.response_1.cases);
+
+
+var slider = document.getElementById('temperatureSlider');
+const input = document.getElementById('temperatureInput');
+var containers = [
+    document.getElementById('container-1'),
+    document.getElementById('container-2'),
+    document.getElementById('container-3')
+];
+function updateContainerDisplay(value) {
+  containers.forEach(container => {
+      container.style.display = 'none';
+      container.style.opacity = '0';
+  });
+
+  let index;
+  if (value >= 0 && value < 0.33) {
+      index = 0;
+  } else if (value >= 0.33 && value < 0.66) {
+      index = 1;
+  } else {
+      index = 2;
+  }
+
+  const selectedContainer = containers[index];
+  selectedContainer.style.display = 'block';
+  setTimeout(() => {
+      selectedContainer.style.opacity = '1';
+  }, 10);
+}
+slider.addEventListener('input', function() {
+  const value = parseFloat(slider.value);
+  input.value = value;
+  updateContainerDisplay(value);
 });
 
-document.querySelector('.button-middle').addEventListener('click', () => {
-    document.getElementById('container-1').style.display = 'none';
-    document.getElementById('container-2').style.display = 'block';
-    document.getElementById('container-3').style.display = 'none';
-    populateContainer('container-2',sectorsdata.response_2.cases);
+// 同步输入框和滑块的值
+input.addEventListener('input', function() {
+  let value = parseFloat(input.value);
+  if (isNaN(value)) {
+      value = 0.1; // 默认值
+  } else if (value < 0) {
+      value = 0;
+  } else if (value > 1) {
+      value = 1;
+  }
+  slider.value = value;
+  updateContainerDisplay(value);
 });
+let isShowing = false; // 追踪对话框是否正在显示
+let showTimeout; // 保存 setTimeout 的引用，以便清除
 
-document.querySelector('.button-far').addEventListener('click', () => {
-    document.getElementById('container-1').style.display = 'none';
-    document.getElementById('container-2').style.display = 'none';
-    document.getElementById('container-3').style.display = 'block';
-    populateContainer('container-3', sectorsdata.response_3.cases);
-});
+// 初始化容器显示
+updateContainerDisplay(parseFloat(slider.value));
+function showSpeechBubble() {
+  const speechBubble = document.getElementById('speech-bubble');
+  if (isShowing) {
+    clearTimeout(showTimeout);
+}
+  speechBubble.classList.remove('hidden');
+  speechBubble.classList.add('visible');
+  isShowing = true;
+  setTimeout(() => {
+      speechBubble.classList.remove('visible');
+      speechBubble.classList.add('hidden');
+      isShowing = false;
+  }, 4000); // 文字框显示时间
+}
 
-
+// 设定时间间隔
+setInterval(showSpeechBubble, 8000);
 
 
 });
@@ -454,6 +505,8 @@ document.querySelector('.button-far').addEventListener('click', () => {
   // 假设数据不为空，隐藏加载动画并显示内容
   function hideing(){
       $('#loading-animation').fadeOut(function() {
+        $('#character-container').css('display', 'block');
+        $('#openleftbutton').css('display', 'block');
         $('#htmlbackground').css('display', 'block');
         $('#search_cotent').css('display', 'block');
           $('#content_title').text();
