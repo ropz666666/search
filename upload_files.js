@@ -50,6 +50,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 监听单选按钮的变化
     radioButtons.forEach(function (radio) {
         radio.addEventListener('change', function () {
+            resetPage();
+            document.getElementById('file-modal').classList.remove('show');
+           
          // 隐藏所有内容 div
          document.querySelectorAll('.content-div').forEach(function (div) {
              div.style.display = 'none';
@@ -59,14 +62,15 @@ document.addEventListener('DOMContentLoaded', function () {
          const contentDivId = 'content-' + radio.value;
          const contentDiv = document.getElementById(contentDivId);
          if (contentDiv) {
+            
              contentDiv.style.display = 'block';
          }
         });
     });
-});
 
 
-window.onload = function () {
+
+
 // 案例级联选择器逻辑
     // 数据结构
     var options = {
@@ -147,6 +151,7 @@ window.onload = function () {
 
     // 产业选择改变时，更新大类选择器
     industrySelect.onchange = function() {
+        
         broadClassSelect.innerHTML = '<option value="">请选择大类</option>';
         smallClassSelect.innerHTML = '<option value="">请选择小类</option>';
         var broad_class = options[this.value];
@@ -183,13 +188,12 @@ window.onload = function () {
     const urlInput = document.getElementById('url-input');
     const urlSubmitButton = document.getElementById('url-submit');
     const closeUrlButton = document.querySelector('.close-url');
-    const textBox = document.getElementById('text-box');
-    
 
+     var aiAnalysistext;
 
     let files = [];
     let selectedFileIndex = 0;
-    var aiAnalysisSuccess = false; // 用于跟踪 AI 分析是否成功
+   
     var isurl=false;
     function showAlert(message) {
         // 创建一个简单的提示框
@@ -206,15 +210,14 @@ window.onload = function () {
     function resetPage() {
         files = [];
         files2 = [];
-        updateFileList();
-        updateFileList2();
-        textBox.value = '';
-        textBox2.value = '';
-        aiAnalysisSuccess = false;
-        aiAnalysisSuccess2 = false;
+        updateFileList(1);
+        updateFileList(2);
+        aiAnalysistext= '';
+        document.getElementById('file-input').value = ''; // 重置文件输入字段
+        document.getElementById('file-input-2').value = ''; // 重置文件输入字段
         industrySelect.value = ''; 
         broadClassSelect.value = '';
-        broadClassSelect.value = '';
+        smallClassSelect.value = '';
         broadTechnologySelect.value='';
         smallTechnologySelect.value='';
         isurl=false;
@@ -238,10 +241,18 @@ window.onload = function () {
     fileInput.addEventListener('change', function(event) {
         const newFiles = Array.from(event.target.files);
             files = files.concat(newFiles);
-            updateFileList();
+            updateFileList(1);
             isUrl = false;  // 设置标志为false
+    const simulatedEvent = {
+        target: {
+            closest: function(selector) {
+                if (selector === 'span') return {}; // 模拟一个 span 元素
+                if (selector === '.delete-btn') return null; // 不是删除按钮，返回 null
+            }
+        }
+    };
+    fileclick(simulatedEvent,1); // 调用 fileclick 来处理文件显示
     });
-
     document.getElementById('drop-area').addEventListener('dragover', function(event) {
         event.preventDefault();
     });
@@ -250,29 +261,59 @@ window.onload = function () {
         event.preventDefault();
         const newFiles = Array.from(event.dataTransfer.files);
         files = files.concat(newFiles);
-        updateFileList();
+        updateFileList(1);
     });
 
-    function updateFileList() {
+    function updateFileList(whichreuqst) {
+        if(whichreuqst===1){
         fileListElement.innerHTML = '';
-        files.forEach((file, index) => {
+        if (files.length === 1) {
+            const file = files[0];
             const listItem = document.createElement('li');
             listItem.className = 'file-list-item';
             listItem.innerHTML = `
-                <span data-index="${index}">${file.name}</span>
-                <button class="delete-btn" data-index="${index}">删除</button>
+                <span>${file.name}</span>
+              
             `;
+              // <button id="delete-btn">删除</button>
             fileListElement.appendChild(listItem);
-        });
+            // 绑定删除按钮的事件
+            document.getElementById('delete-btn').addEventListener('click', function() {
+                deleteFile(1);
+            });
+        }
+
+        
+    }
+    else{
+        fileList2Element.innerHTML = '';
+        if (files2.length === 1) {
+            const file = files2[0];
+            const listItem = document.createElement('li');
+            listItem.className = 'file-list-item';
+            listItem.innerHTML = `
+                <span>${file.name}</span>
+              
+            `;
+              // <button id="delete-btn">删除</button>
+            fileList2Element.appendChild(listItem);
+            // 绑定删除按钮的事件
+            document.getElementById('delete-btn').addEventListener('click', function() {
+                deleteFile(2);
+            });
+        }
+
     }
 
-    fileListElement.addEventListener('click', function(event) {
+    }
+    function fileclick(event,whichreuqst) {
         const span = event.target.closest('span');
         const deleteBtn = event.target.closest('.delete-btn');
-
+        let file; 
+        if(whichreuqst===1)
+         {
         if (span) {
-            selectedFileIndex = span.dataset.index;
-            const file = files[selectedFileIndex];
+             file = files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 const fileName = file.name.toLowerCase();
@@ -322,8 +363,10 @@ window.onload = function () {
                     } 
                     else {
                         modalContentElement.textContent = '仅支持文本 (.txt)、Word (.docx)、Excel (.xlsx) 和 CSV (.csv) 文件。';
+                        
                     }
-                    fileModal.style.display = 'block'; // 显示弹窗
+                    document.getElementById('file-modal').classList.add('show');
+                   
                 };
                 if (file.name.toLowerCase().endsWith('.txt') || file.name.toLowerCase().endsWith('.csv')) {
                     reader.readAsText(file);
@@ -333,107 +376,416 @@ window.onload = function () {
             }
 
         if (deleteBtn) {
-            const index = deleteBtn.dataset.index;
-            files.splice(index, 1);
-            updateFileList();
-            fileModal.style.display = 'none'; // 隐藏弹窗
+            
+            deleteFile(1);
         }
+    }
+    else{
+        if (span) {
+            file = files2[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileName = file.name.toLowerCase();
+                if (fileName.endsWith('.txt')) {
+                    modalContent2Element.textContent = e.target.result;
+                } else if (fileName.endsWith('.docx')) {
+                    mammoth.convertToHtml({arrayBuffer: e.target.result})
+                        .then(function(result) {
+                            modalContent2Element.innerHTML = result.value;
+                        })
+                        .catch(function(err) {
+                            console.error(err);
+                            modalContent2Element.textContent = '读取 Word 文件时出错。';
+                        });
+                } else if (fileName.endsWith('.xlsx')) {
+                    const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                    const sheetNames = workbook.SheetNames;
+                    const sheet = workbook.Sheets[sheetNames[0]];
+                    const htmlTable = XLSX.utils.sheet_to_html(sheet);
+                    modalContent2Element.innerHTML = htmlTable;
+                } else if (fileName.endsWith('.csv')) {
+                        const csvData = e.target.result;
+                        Papa.parse(csvData, {
+                            header: true,
+                            complete: function(results) {
+                                const table = document.createElement('table');
+                                const headerRow = document.createElement('tr');
+                                results.meta.fields.forEach(field => {
+                                    const th = document.createElement('th');
+                                    th.textContent = field;
+                                    headerRow.appendChild(th);
+                                });
+                                table.appendChild(headerRow);
+                                results.data.forEach(row => {
+                                    const tr = document.createElement('tr');
+                                    results.meta.fields.forEach(field => {
+                                        const td = document.createElement('td');
+                                        td.textContent = row[field];
+                                        tr.appendChild(td);
+                                    });
+                                    table.appendChild(tr);
+                                });
+                                modalContent2Element.innerHTML = '';
+                                modalContent2Element.appendChild(table);
+                            }
+                        });
+                    } else {
+                        modalContent2Element.textContent = '仅支持文本 (.txt)、Word (.docx)、Excel (.xlsx) 和 CSV (.csv) 文件。';
+                    }
+                    document.getElementById('file-modal-2').classList.add('show');
+                };
+                if (file.name.toLowerCase().endsWith('.txt') || file.name.toLowerCase().endsWith('.csv')) {
+                    reader.readAsText(file);
+                } else {
+                    reader.readAsArrayBuffer(file);
+                }
+            }
+
+        if (deleteBtn) {
+            deleteFile(2);
+        }
+
+
+
+    }
+    }
+    function deleteFile(whichreuqst) {
+        if(whichreuqst===1)
+            {
+        if (files.length === 1) {
+            files = []; // 清空 files 数组
+            updateFileList(1);
+            document.getElementById('file-modal').classList.remove('show'); // 关闭弹窗
+            document.getElementById('file-input').value = ''; // 重置文件输入字段
+        }
+    }
+    else
+    {
+        if (files2.length === 1) {
+            files2 = []; // 清空 files 数组
+            updateFileList(2);
+            document.getElementById('file-modal-2').classList.remove('show'); // 关闭弹窗
+            document.getElementById('file-input-2').value = ''; // 重置文件输入字段
+        }
+    }
+    }
+    document.getElementById("backlastpage").addEventListener("click",function(){
+        document.getElementById('file-modal').classList.remove('show');
     });
+    document.getElementById("backlastpage-2").addEventListener("click",function(){
+        document.getElementById('file-modal-2').classList.remove('show');
+    });
+    document.querySelector(".filedelete-btn").addEventListener("click",function(){
+        deleteFile(1);
+    });
+    document.querySelector(".filedelete-btn-2").addEventListener("click",function(){
+        deleteFile(2);
+    });
+    document.getElementById("nextpage").addEventListener("click",function(){
+        if (files.length === 0) {
+            showAlert('请先上传文件。');
+            return;
+        }
+        document.getElementById('file-modal').classList.add('show');
+    });
+   
+    
+    fileListElement.addEventListener('click', function(e){
+        console.log(10);
+        fileclick(e,1);
+    });
+  
 
     closeButton.addEventListener('click', function() {
-        fileModal.style.display = 'none'; // 隐藏弹窗
+        document.getElementById('file-modal').classList.remove('show');
     });
 
     closeUrlButton.addEventListener('click', function() {
         urlModal.style.display = 'none'; // 隐藏 URL 弹窗
     });
 
-    window.addEventListener('click', function(event) {
-        if (event.target === fileModal) {
-            fileModal.style.display = 'none'; // 隐藏弹窗
-        }
-        if (event.target === urlModal) {
-            urlModal.style.display = 'none'; // 隐藏 URL 弹窗
-        }
-    });
+    // window.addEventListener('click', function(event) {
+    //     if (event.target === fileModal) {
+    //         fileModal.style.display = 'none'; // 隐藏弹窗
+    //     }
+    //     if (event.target === urlModal) {
+    //         urlModal.style.display = 'none'; // 隐藏 URL 弹窗
+    //     }
+    // });
 
     // 文件传入到后端 agent API
-    readButton.addEventListener('click', function() {
-        if (files.length === 0) {
-            showAlert('请先上传文件。');
+    // async function aiAnalysis(whichreuqst) {
+    //     if(whichreuqst===1){
+    //     if (files.length === 0) {
+    //         showAlert('请先上传文件。');
+    //         return;
+    //     }
+    //    }
+    //    else{
+    //     if (files2.length === 0) {
+    //         showAlert('请先上传文件。');
+    //         return;
+    //     }
+    //    }
+    //    let url='';
+    //    let file='';
+    //     document.getElementById('loadingOverlay').style.display = 'flex';
+    //     loadingSpinner.style.display = 'block';
+    //       if(isurl||isurl2){
+    //         if(isurl){
+    //            url = urlInput.value.trim();
+    //         }
+    //         else{
+    //             url = urlInput2.value.trim();
+    //         }
+    //         const dataToSend = JSON.stringify(url);
+    //         try {
+    //             const response = await fetch('https://aithub.com.cn:5040/case/url', {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json',
+    //                 },
+    //                 body: dataToSend
+    //             });
+    //             const data = await response.json();
+    //             console.log('文件已发送到大模型:', data);
+    //             if (data.error != null) {
+    //                 document.getElementById('loadingOverlay').style.display = 'none';
+    //                 loadingSpinner.style.display = 'none';
+    //                 showAlert('分析失败，请检查网络。');
+    //                 return;
+    //             }
+    //             aiAnalysistext = data.analysis;
+    //         } catch (error) {
+    //             document.getElementById('loadingOverlay').style.display = 'none';
+    //             loadingSpinner.style.display = 'none';
+    //             console.error('通过 URL 上传文件时出错:', error);
+    //             showAlert('分析失败，请检查网络。');
+    //         }
+            
+    //       }
+    //       else{
+    //         if(whichreuqst===1)
+    //         {
+    //         file = files[0];
+    //         }
+    //         else{
+    //         file = files2[0];
+    //         }
+
+    //         console.log(file);
+            
+    //         var formData = new FormData();
+    //         formData.append('file', file);
+
+    //         try {
+    //             const response = await fetch('https://aithub.com.cn:5040/case/file', {
+    //                 method: 'POST',
+    //                 body: formData
+    //             });
+    //             const data = await response.json();
+    //             console.log('文件已发送到大模型:', data);
+    //             if (data.error != null) {
+    //                 document.getElementById('loadingOverlay').style.display = 'none';
+    //                 loadingSpinner.style.display = 'none';
+    //                 showAlert('分析失败，请检查网络。');
+    //                 return;
+    //             }
+    //             aiAnalysistext = data.analysis;
+    //         } catch (error) {
+    //             document.getElementById('loadingOverlay').style.display = 'none';
+    //             loadingSpinner.style.display = 'none';
+    //             console.error('通过文件上传时出错:', error);
+    //             showAlert('分析失败，请检查网络。');
+    //         }
+        
+    //       }
+        
+       
+        
+    // };
+  // 显示和更新进度条的函数
+  let progressIntervalId = null; // 用于保存定时器 ID
+
+  // 更新进度条的函数
+  function updateProgressBar(percentage) {
+      const progressBar = document.getElementById('uploadProgressBar');
+      const progressText = document.getElementById('progressText');
+      progressBar.style.width = `${percentage}%`;
+      progressText.textContent = `${percentage}%`;
+  }
+  
+  // 清除定时器
+  function clearProgressInterval() {
+      if (progressIntervalId !== null) {
+          clearInterval(progressIntervalId);
+          progressIntervalId = null;
+      }
+  }
+  // 模拟进度条的动态增加
+function simulateProgressUpdate(targetPercentage, interval = 100, increment = 1) {
+    let currentPercentage = parseInt(document.getElementById('uploadProgressBar').style.width, 10) || 0;
+    clearProgressInterval(); // 清除之前的定时器
+    
+    progressIntervalId = setInterval(() => {
+        currentPercentage += increment;
+        if (currentPercentage >= targetPercentage) {
+            currentPercentage = targetPercentage;
+            clearProgressInterval(); // 到达目标百分比后清除定时器
+        }
+        updateProgressBar(currentPercentage);
+    }, interval);
+}
+
+    async function aiAnalysis(whichRequest) {
+        if (whichRequest === 1) {
+            if (files.length === 0) {
+                showAlert('请先上传文件。');
+                return;
+            }
+        } else {
+            if (files2.length === 0) {
+                showAlert('请先上传文件。');
+                return;
+            }
+        }
+    
+        let url = '';
+        let file = '';
+        try {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('uploadProgressBarContainer').style.display = 'block';
+            updateProgressBar(0);
+    
+            if (isurl || isurl2) {
+                url = isurl ? urlInput.value.trim() : urlInput2.value.trim();
+                const dataToSend = JSON.stringify(url);
+    
+                // 模拟进度条更新到70%
+                simulateProgressUpdate(70);
+    
+                const response = await fetch('https://aithub.com.cn:5040/case/url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: dataToSend
+                });
+    
+                const data = await response.json();
+                if (data.error != null) {
+                    showAlert('分析失败，请检查网络。');
+                    return 70;
+                }
+                aiAnalysistext = data.analysis;
+            } 
+            else {
+                file = whichRequest === 1 ? files[0] : files2[0];
+                const formData = new FormData();
+                formData.append('file', file);
+    
+                // 模拟进度条更新到 70%
+                simulateProgressUpdate(70);
+    
+                const response = await fetch('https://aithub.com.cn:5040/case/file', {
+                    method: 'POST',
+                    body: formData
+                });
+    
+                const data = await response.json();
+                if (data.error != null) {
+                    showAlert('分析失败，请检查网络。');
+                    
+                    return 70;
+                }
+                aiAnalysistext = data.analysis;
+            }
+    
+            // 模拟进度条更新到 90%
+            simulateProgressUpdate(90);
+            return 90;
+        } 
+        catch (error) {
+            showAlert('分析失败，请检查网络。');
+            console.error('文件上传时出错:', error);
+            return 70;
+        }
+    }
+    
+   
+    // 获取按钮元素
+    const submitButton = document.getElementById('submit');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const successMessage = document.getElementById('successMessage');
+     const closesuccessButton = successMessage.querySelector('.close');
+     submitButton.addEventListener('click', async function () {
+        if (!industrySelect.value || !broadClassSelect.value || !smallClassSelect.value) {
+            showAlert('请确保所有步骤都已成功完成。');
             return;
         }
-        document.getElementById('loadingOverlay').style.display = 'flex';
-        loadingSpinner.style.display = 'block';
-          if(isurl){
-            const url = urlInput.value.trim();
-            const dataToSend = JSON.stringify(url);
-            fetch('https://aithub.com.cn:5040/case/url', { // 使用目标服务器的 API 端点
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',  // 发送 JSON 数据
         
-                },
-                body:dataToSend
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('文件已发送到大模型:', data);
-                if (data.error != null) {
-                    document.getElementById('loadingOverlay').style.display = 'none';
-                    loadingSpinner.style.display = 'none';
-                    showAlert('分析失败，请检查网络。');
-                    return;
-                }
-                textBox.value = data.analysis;
-                aiAnalysisSuccess = true;
+        const aiProgress = await aiAnalysis(1);
+        if (aiProgress <=70)
+            {   showAlert('分析失败，请检查网络。');
                 document.getElementById('loadingOverlay').style.display = 'none';
-                loadingSpinner.style.display = 'none';
-            })
-            .catch(error => {
-                console.error('通过 URL 上传文件时出错:', error);
-                showAlert('分析失败，请检查网络。');
-                document.getElementById('loadingOverlay').style.display = 'none';
-                loadingSpinner.style.display = 'none';
-            });
-          }
-          else{
+                document.getElementById('uploadProgressBarContainer').style.display = 'none';
+                return; // 如果分析失败，则中断
+            }
            
-            const file = files[0];
-            console.log(file);
-            
-            var formData = new FormData();
-            formData.append('file', file);
+    
+        const industryValue = industrySelect.value;
+        const broadClassValue = broadClassSelect.value;
+        const smallClassValue = smallClassSelect.value;
+        const textValue = aiAnalysistext;
+    
+        if (!textValue) {
+            showAlert('分析失败，请检查网络。');
+            return;
+        }
+    
+        const bodyForCaseUpload = {
+            sector: industryValue,
+            division: broadClassValue,
+            subsector: smallClassValue,
+            text: textValue
+        };
+     // 模拟进度条更新到 95%
+     simulateProgressUpdate(95);
+     
+    try {
+        const response = await fetch('https://aithub.com.cn:5040/case', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyForCaseUpload)
+        });
 
-            fetch('https://aithub.com.cn:5040/case/file', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('文件已发送到大模型:', data);
-                console.log(data);
-                if(data.error!=null)
-                    { document.getElementById('loadingOverlay').style.display = 'none';
-                        loadingSpinner.style.display = 'none';
-                        showAlert('分析失败，请检查网络。');
-                        return
-                    }
-                textBox.value=data.analysis;
-                aiAnalysisSuccess = true;
-                document.getElementById('loadingOverlay').style.display = 'none';
-                loadingSpinner.style.display = 'none';
-            })
-            .catch(error => {
-                console.error('通过 URL 上传文件时出错:', error);
-               showAlert('分析失败，请检查网络。');
-                document.getElementById('loadingOverlay').style.display = 'none';
-                loadingSpinner.style.display = 'none';
-            });
-        
-          }
+        const data = await response.json();
+        console.log('数据已发送到后端：', data);
+
+        // 模拟进度条更新到 100%
+        simulateProgressUpdate(100);
+       
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('uploadProgressBarContainer').style.display = 'none';
+            document.getElementById('file-modal').classList.remove('show');
+            updateProgressBar(0);
+            successMessage.style.display = 'block';
+            resetPage();
+        }, 3000);
+        // 显示 1 秒的 100% 进度
+    } catch (error) {
+        showAlert('提交失败，请检查网络。');
+        console.error('提交数据时出错:', error);
+        document.getElementById('loadingOverlay').style.display = 'none';
+        document.getElementById('uploadProgressBarContainer').style.display = 'none';
+        updateProgressBar(0);
+    }
+     
+       
     });
-
+    
+    closesuccessButton.addEventListener('click', function () {
+        successMessage.style.display = 'none';
+    });
     urlSubmitButton.addEventListener('click', function() {
         const url = urlInput.value.trim();
         if (url) {
@@ -458,9 +810,18 @@ window.onload = function () {
                     showAlert('只能上传一个文件，若想重新上传请删除之前的文件。');
                 } else {
                     files.push(file);
-                    updateFileList();
+                    updateFileList(1);
                     urlModal.style.display = 'none'; // 隐藏 URL 弹窗
-                    isurl=true;   
+                    isurl=true;  
+                    const simulatedEvent = {
+                        target: {
+                            closest: function(selector) {
+                                if (selector === 'span') return {}; // 模拟一个 span 元素
+                                if (selector === '.delete-btn') return null; // 不是删除按钮，返回 null
+                            }
+                        }
+                    };
+                    fileclick(simulatedEvent,1); // 调用 fileclick 来处理文件显示
                 }
             })
             .catch(error => {
@@ -470,121 +831,72 @@ window.onload = function () {
                 alert('无法通过 URL 上传文件，请检查 URL 是否有效或是否启用了跨域资源共享。');
             });
     } else {
-        alert('请输入文件的 URL。');
+       showAlert('请输入文件的 URL。');
     }
     });
-
-// 从后端获取文本，还需要与后端结合进行调试
-    // 获取文本框元素
-    
-
-    // 获取按钮元素。点击 “ AI 分析 ” 按钮后会直接通过 API 从后端获取 agent 返回的文本，需要考虑实际 agent 的相应速度。
-    const getTextButton = document.getElementById('read-button');
-
-    // “ AI 分析 ” 按钮点击事件
-    // getTextButton.addEventListener('click', function() {
-    //     // 创建XMLHttpRequest对象
-    //     var xhr = new XMLHttpRequest();
-
-    //     // 设置请求类型、URL、以及是否异步处理请求
-    //     xhr.open('GET', '/api/text', true);
-
-    //     // 设置发送请求时的内容类型
-    //     xhr.setRequestHeader('Content-Type', 'application/json');
-
-    //     // 当请求完成时触发事件
-    //     xhr.onreadystatechange = function() {
-    //         if (xhr.readyState === 4 && xhr.status === 200) {
-    //             // 解析返回的JSON数据
-    //             var response = JSON.parse(xhr.responseText);
-    //             // 将文本内容设置到文本框中
-    //             textBox.value = response.text;
-    //         }
-    //     };
-
-    //     // 发送请求
-    //     xhr.send();
-    // });
-
-    /* 从后端获取文本的后端代码的实例
-    const express = require('express');
-    const app = express();
-    const port = 3000;
-
-    app.get('/api/text', (req, res) => {
-        // 这里可以处理你的逻辑，比如从数据库中查询文本内容
-        res.json({ text: '这是来自后端的文本内容' });
-    });
-
-    app.listen(port, () => {
-        console.log(`Server running on port ${port}`);
-    });
-    */
-
-// 将三个选择器的分类和文本框中的文本传送到后端
-    // 获取按钮元素
-    const submitButton = document.getElementById('submit');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const successMessage = document.getElementById('successMessage');
-     const closesuccessButton = successMessage.querySelector('.close');
     // “ 提交 ” 按钮点击事件
-    submitButton.addEventListener('click', function() {
-        if (!aiAnalysisSuccess) {
-            showAlert('请先执行 AI 分析。');
-            return;
-        }
-        if (!industrySelect.value || !broadClassSelect.value || !smallClassSelect.value) {
-            showAlert('请确保所有步骤都已成功完成。');
-            return;
-        }
-        // 获取选择器的值
-        document.getElementById('loadingOverlay').style.display = 'flex';
-        loadingSpinner.style.display = 'block';
-        const industryValue = industrySelect.value;
-        const broadClassValue = broadClassSelect.value;
-        const smallClassValue = smallClassSelect.value;
+    // submitButton.addEventListener('click',async  function() {
+     
+    //     if (!industrySelect.value || !broadClassSelect.value || !smallClassSelect.value) {
+    //         showAlert('请确保所有步骤都已成功完成。');
+    //         return;
+    //     } 
+    //     await aiAnalysis(1);
+    //     // 获取选择器的值
+       
+    //     const industryValue = industrySelect.value;
+    //     const broadClassValue = broadClassSelect.value;
+    //     const smallClassValue = smallClassSelect.value;
 
-        // 获取文本框的值
-        const textValue = textBox.value;
+    //     // 获取文本框的值
+    //     const textValue = aiAnalysistext;
+    //     if (!textValue) {
+    //         showAlert('分析失败，请检查网络。');
+    //         document.getElementById('loadingOverlay').style.display = 'none';
+    //         loadingSpinner.style.display = 'none';
+    //         return;
+    //     }
+    //     const bodyForCaseUpload = {
+    //         sector: industryValue,
+    //         division: broadClassValue,
+    //         subsector:smallClassValue,
+    //         text: textValue
+    //     };
+    //       console.log(textValue)
+    //     // 使用fetch发送数据到后端API
+    //     fetch('https://aithub.com.cn:5040/case', { // 替换为实际的API端点
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',  // 发送 JSON 数据
+    //         },
+    //         body: JSON.stringify(bodyForCaseUpload)
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
           
-        const bodyForCaseUpload = {
-            sector: industryValue,
-            division: broadClassValue,
-            subsector:smallClassValue,
-            text: textValue
-        };
+    //         console.log('数据已发送到后端：', data);
+    //           // 隐藏加载动画
+    //     document.getElementById('loadingOverlay').style.display = 'none';
+    //     loadingSpinner.style.display = 'none';
 
-        // 使用fetch发送数据到后端API
-        fetch('https://aithub.com.cn:5040/case', { // 替换为实际的API端点
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',  // 发送 JSON 数据
-            },
-            body: JSON.stringify(bodyForCaseUpload)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('数据已发送到后端：', data);
-              // 隐藏加载动画
-        document.getElementById('loadingOverlay').style.display = 'none';
-        loadingSpinner.style.display = 'none';
-
-        // 显示提交成功的提示框
-        successMessage.style.display = 'block';
-         // 提交成功后的逻辑
-         resetPage();
-            // 这里可以添加处理成功响应的代码
-        })
-        .catch(error => {
-            showAlert('提交失败，请检查网络。');
-            document.getElementById('loadingOverlay').style.display = 'none';
-            // 无论成功与否都隐藏加载动画
-            loadingSpinner.style.display = 'none';
-        });
-    });
-    closesuccessButton.addEventListener('click', function() {
-        successMessage.style.display = 'none';
-    });
+    //     // 显示提交成功的提示框
+    //     successMessage.style.display = 'block';
+    //      // 提交成功后的逻辑
+    //      resetPage();
+    //      document.getElementById('file-modal').classList.remove('show');
+    //         // 这里可以添加处理成功响应的代码
+    //     })
+    //     .catch(error => {
+    //         console.log(error);
+    //         showAlert('提交失败，请检查网络。');
+    //         document.getElementById('loadingOverlay').style.display = 'none';
+    //         // 无论成功与否都隐藏加载动画
+    //         loadingSpinner.style.display = 'none';
+    //     });
+    // });
+    // closesuccessButton.addEventListener('click', function() {
+    //     successMessage.style.display = 'none';
+    // });
 
 
 // 技术级联选择器逻辑
@@ -639,10 +951,7 @@ window.onload = function () {
     const urlSubmit2Button = document.getElementById('url-submit-2');
     const closeUrl2Button = document.querySelector('.close-url-2');
     const textBox2 = document.getElementById('text-box-2');
-    var aiAnalysisSuccess2 = false; // 用于跟踪 AI 分析是否成功
     let files2 = [];
-    let selectedFileIndex2 = null;
-    var aiAnalysisSuccess2=false;
     var isurl2=false;
     urlUploadTrigger2.addEventListener('click', function () {
         if (files2.length > 0) {
@@ -658,13 +967,22 @@ window.onload = function () {
             fileInput2.click();
         }
     });
-  
     fileInput2.addEventListener('change', function(event) {
         const newFiles = Array.from(event.target.files);
-        files2 = files2.concat(newFiles);
-        isurl2=false;
-        updateFileList2();
+            files2 = files2.concat(newFiles);
+            updateFileList(2);
+            isurl2 = false;  // 设置标志为false
+    const simulatedEvent = {
+        target: {
+            closest: function(selector) {
+                if (selector === 'span') return {}; // 模拟一个 span 元素
+                if (selector === '.delete-btn') return null; // 不是删除按钮，返回 null
+            }
+        }
+    };
+    fileclick(simulatedEvent,2); // 调用 fileclick 来处理文件显示
     });
+ 
 
     document.getElementById('drop-area-2').addEventListener('dragover', function(event) {
         event.preventDefault();
@@ -674,215 +992,134 @@ window.onload = function () {
         event.preventDefault();
         const newFiles2 = Array.from(event.dataTransfer.files);
         files2 = files2.concat(newFiles2);
-        updateFileList2();
+        updateFileList2(2);
     });
-
-    function updateFileList2() {
-        fileList2Element.innerHTML = '';
-        files2.forEach((file, index) => {
-            const listItem = document.createElement('li');
-            listItem.className = 'file-list-item-2';
-            listItem.innerHTML = `
-                <span data-index="${index}">${file.name}</span>
-                <button class="delete-btn" data-index="${index}">删除</button>
-            `;
-            fileList2Element.appendChild(listItem);
-        });
-    }
-
-    fileList2Element.addEventListener('click', function(event) {
-        const span = event.target.closest('span');
-        const deleteBtn = event.target.closest('.delete-btn');
-
-        if (span) {
-            selectedFileIndex2 = span.dataset.index;
-            const file = files2[selectedFileIndex2];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const fileName = file.name.toLowerCase();
-                if (fileName.endsWith('.txt')) {
-                    modalContent2Element.textContent = e.target.result;
-                } else if (fileName.endsWith('.docx')) {
-                    mammoth.convertToHtml({arrayBuffer: e.target.result})
-                        .then(function(result) {
-                            modalContent2Element.innerHTML = result.value;
-                        })
-                        .catch(function(err) {
-                            console.error(err);
-                            modalContent2Element.textContent = '读取 Word 文件时出错。';
-                        });
-                } else if (fileName.endsWith('.xlsx')) {
-                    const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-                    const sheetNames = workbook.SheetNames;
-                    const sheet = workbook.Sheets[sheetNames[0]];
-                    const htmlTable = XLSX.utils.sheet_to_html(sheet);
-                    modalContent2Element.innerHTML = htmlTable;
-                } else if (fileName.endsWith('.csv')) {
-                        const csvData = e.target.result;
-                        Papa.parse(csvData, {
-                            header: true,
-                            complete: function(results) {
-                                const table = document.createElement('table');
-                                const headerRow = document.createElement('tr');
-                                results.meta.fields.forEach(field => {
-                                    const th = document.createElement('th');
-                                    th.textContent = field;
-                                    headerRow.appendChild(th);
-                                });
-                                table.appendChild(headerRow);
-                                results.data.forEach(row => {
-                                    const tr = document.createElement('tr');
-                                    results.meta.fields.forEach(field => {
-                                        const td = document.createElement('td');
-                                        td.textContent = row[field];
-                                        tr.appendChild(td);
-                                    });
-                                    table.appendChild(tr);
-                                });
-                                modalContent2Element.innerHTML = '';
-                                modalContent2Element.appendChild(table);
-                            }
-                        });
-                    } else {
-                        modalContent2Element.textContent = '仅支持文本 (.txt)、Word (.docx)、Excel (.xlsx) 和 CSV (.csv) 文件。';
-                    }
-                    fileModal2.style.display = 'block'; // 显示弹窗
-                };
-                if (file.name.toLowerCase().endsWith('.txt') || file.name.toLowerCase().endsWith('.csv')) {
-                    reader.readAsText(file);
-                } else {
-                    reader.readAsArrayBuffer(file);
-                }
-            }
-
-        if (deleteBtn) {
-            const index = deleteBtn.dataset.index;
-            files2.splice(index, 1);
-            updateFileList2();
-            fileModal2.style.display = 'none'; // 隐藏弹窗
-        }
-    });
-
-    close2Button.addEventListener('click', function() {
-        fileModal2.style.display = 'none'; // 隐藏弹窗
-    });
-
     closeUrl2Button.addEventListener('click', function() {
         urlModal2.style.display = 'none'; // 隐藏 URL 弹窗
     });
 
-    window.addEventListener('click', function(event) {
-        if (event.target === fileModal2) {
-            fileModal2.style.display = 'none'; // 隐藏弹窗
-        }
-        if (event.target === urlModal2) {
-            urlModal2.style.display = 'none'; // 隐藏 URL 弹窗
-        }
-    });
-    
+   
 
-    // 文件传入到后端 agent API
-     readButton2.addEventListener('click', function() {
+    // fileList2Element.addEventListener('click', function(event) {
+    //     const span = event.target.closest('span');
+    //     const deleteBtn = event.target.closest('.delete-btn');
+
+    //     if (span) {
+    //         selectedFileIndex2 = span.dataset.index;
+    //         const file = files2[selectedFileIndex2];
+    //         const reader = new FileReader();
+    //         reader.onload = function(e) {
+    //             const fileName = file.name.toLowerCase();
+    //             if (fileName.endsWith('.txt')) {
+    //                 modalContent2Element.textContent = e.target.result;
+    //             } else if (fileName.endsWith('.docx')) {
+    //                 mammoth.convertToHtml({arrayBuffer: e.target.result})
+    //                     .then(function(result) {
+    //                         modalContent2Element.innerHTML = result.value;
+    //                     })
+    //                     .catch(function(err) {
+    //                         console.error(err);
+    //                         modalContent2Element.textContent = '读取 Word 文件时出错。';
+    //                     });
+    //             } else if (fileName.endsWith('.xlsx')) {
+    //                 const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+    //                 const sheetNames = workbook.SheetNames;
+    //                 const sheet = workbook.Sheets[sheetNames[0]];
+    //                 const htmlTable = XLSX.utils.sheet_to_html(sheet);
+    //                 modalContent2Element.innerHTML = htmlTable;
+    //             } else if (fileName.endsWith('.csv')) {
+    //                     const csvData = e.target.result;
+    //                     Papa.parse(csvData, {
+    //                         header: true,
+    //                         complete: function(results) {
+    //                             const table = document.createElement('table');
+    //                             const headerRow = document.createElement('tr');
+    //                             results.meta.fields.forEach(field => {
+    //                                 const th = document.createElement('th');
+    //                                 th.textContent = field;
+    //                                 headerRow.appendChild(th);
+    //                             });
+    //                             table.appendChild(headerRow);
+    //                             results.data.forEach(row => {
+    //                                 const tr = document.createElement('tr');
+    //                                 results.meta.fields.forEach(field => {
+    //                                     const td = document.createElement('td');
+    //                                     td.textContent = row[field];
+    //                                     tr.appendChild(td);
+    //                                 });
+    //                                 table.appendChild(tr);
+    //                             });
+    //                             modalContent2Element.innerHTML = '';
+    //                             modalContent2Element.appendChild(table);
+    //                         }
+    //                     });
+    //                 } else {
+    //                     modalContent2Element.textContent = '仅支持文本 (.txt)、Word (.docx)、Excel (.xlsx) 和 CSV (.csv) 文件。';
+    //                 }
+    //                 fileModal2.style.display = 'block'; // 显示弹窗
+    //             };
+    //             if (file.name.toLowerCase().endsWith('.txt') || file.name.toLowerCase().endsWith('.csv')) {
+    //                 reader.readAsText(file);
+    //             } else {
+    //                 reader.readAsArrayBuffer(file);
+    //             }
+    //         }
+
+    //     if (deleteBtn) {
+    //         const index = deleteBtn.dataset.index;
+    //         files2.splice(index, 1);
+    //         updateFileList2();
+    //         fileModal2.style.display = 'none'; // 隐藏弹窗
+    //     }
+    // });
+    document.getElementById("nextpage-2").addEventListener("click",function(){
         if (files2.length === 0) {
             showAlert('请先上传文件。');
             return;
         }
-        document.getElementById('loadingOverlay').style.display = 'flex';
-        loadingSpinner.style.display = 'block';
-          if(isurl2){
-            const url = urlInput2.value.trim();
-            const dataToSend = JSON.stringify(url);
-            fetch('https://aithub.com.cn:5040/case/url', { // 使用目标服务器的 API 端点
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',  // 发送 JSON 数据
-                    // 如果需要认证，请添加Authorization头部
-                    // 'Authorization': 'Bearer ' + token,
-                },
-                body:dataToSend
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('文件已发送到大模型:', data);
-                if (data.error != null) {
-                    document.getElementById('loadingOverlay').style.display = 'none';
-                    loadingSpinner.style.display = 'none';
-                    showAlert('分析失败，请检查网络。');
-                    return;
-                }
-                textBox2.value = data.analysis;
-                aiAnalysisSuccess2 = true;
-                document.getElementById('loadingOverlay').style.display = 'none';
-                loadingSpinner.style.display = 'none';
-            })
-            .catch(error => {
-                console.error('通过 URL 上传文件时出错:', error);
-                showAlert('分析失败，请检查网络。');
-                document.getElementById('loadingOverlay').style.display = 'none';
-                loadingSpinner.style.display = 'none';
-            });
-          }
-          else{
-           
-            const file = files2[0];
-            console.log(file);
-            
-            var formData = new FormData();
-            formData.append('file', file);
-
-            fetch('https://aithub.com.cn:5040/case/file', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('文件已发送到大模型:', data);
-                console.log(data);
-                if(data.error!=null)
-                    { document.getElementById('loadingOverlay').style.display = 'none';
-                        loadingSpinner.style.display = 'none';
-                        showAlert('分析失败，请检查网络。');
-                        return
-                    }
-                textBox2.value=data.analysis;
-                aiAnalysisSuccess2 = true;
-                document.getElementById('loadingOverlay').style.display = 'none';
-                loadingSpinner.style.display = 'none';
-            })
-            .catch(error => {
-                console.error('通过 URL 上传文件时出错:', error);
-               showAlert('分析失败，请检查网络。');
-                document.getElementById('loadingOverlay').style.display = 'none';
-                loadingSpinner.style.display = 'none';
-            });
-        
-          }
+        document.getElementById('file-modal-2').classList.add('show');
     });
 
     urlSubmit2Button.addEventListener('click', function() {
         const url = urlInput2.value.trim();
-        if (url) { document.getElementById('loadingOverlay').style.display = 'block';
+        if (url) { 
+            document.getElementById('loadingOverlay').style.display = 'block';
             loadingSpinner.style.display = 'block';
             fetch(url)
                 .then(response => response.blob())
                 .then(blob => {
                     document.getElementById('loadingOverlay').style.display = 'none';
                     loadingSpinner.style.display = 'none';
-                    const file = new File([blob], url.split('/').pop());
-                    files2.push(file);
-                    updateFileList2();
-                    isurl2=true;
-                    urlModal2.style.display = 'none'; // 隐藏 URL 弹窗
+                    const fileName = url.split('/').pop() || 'unknown_file';
+                    const file = new File([blob], fileName);
+                    
+                    if (files2.length > 0) {
+                        showAlert('只能上传一个文件，若想重新上传请删除之前的文件。');
+                    } else {
+                        files2.push(file);
+                        updateFileList(2);
+                        urlModal2.style.display = 'none'; // 隐藏 URL 弹窗
+                        isurl2=true;  
+                        const simulatedEvent = {
+                            target: {
+                                closest: function(selector) {
+                                    if (selector === 'span') return {}; // 模拟一个 span 元素
+                                    if (selector === '.delete-btn') return null; // 不是删除按钮，返回 null
+                                }
+                            }
+                        };
+                        fileclick(simulatedEvent,2); // 调用 fileclick 来处理文件显示
+                    }
                 })
                 .catch(error => {
                     document.getElementById('loadingOverlay').style.display = 'none';
                     loadingSpinner.style.display = 'none';
                     console.error('通过 URL 上传文件时出错:', error);
-                    alert('无法通过 URL 上传文件，请检查 URL 是否有效。');
+                    showAlert('无法通过 URL 上传文件，请检查 URL 是否有效。');
                 });
         } else {
             
-            alert('请输入文件的 URL。');
+           showAlert('请输入文件的 URL!');
         }
     });
 
@@ -891,69 +1128,129 @@ window.onload = function () {
 
 
     // 获取按钮元素。点击 “ AI 分析 ” 按钮后会直接通过 API 从后端获取 agent 返回的文本，需要考虑实际 agent 的相应速度。
-   
 
-
-
-
-
-
-    const submit2Button = document.getElementById('submit-2');
+    const submitButton2 = document.getElementById('submit-2');
 
     // “ 提交 ” 按钮点击事件
-    submit2Button.addEventListener('click', function() {
-        if (!aiAnalysisSuccess2) {
-            showAlert('请先执行 AI 分析。');
-            return;
-        }
+    // submit2Button.addEventListener('click', function() {
+    //     if (!aiAnalysisSuccess2) {
+    //         showAlert('请先执行 AI 分析。');
+    //         return;
+    //     }
+    //     if (!broadTechnologySelect.value|| !smallTechnologySelect.value) {
+    //         showAlert('请确保所有步骤都已成功完成。');
+    //         return;
+    //     }
+    //       document.getElementById('loadingOverlay').style.display = 'flex';
+    //     loadingSpinner.style.display = 'block'
+    //     // 获取选择器的值
+    //     const broadTechnologyValue = broadTechnologySelect.value;
+    //     const smallTechnologyValue = smallTechnologySelect.value;
+
+    //     // 获取文本框的值
+    //     const text2Value = textBox2.value;
+    //     const bodyForCaseUpload = {
+    //         title:broadTechnologyValue, classification:smallTechnologyValue,description:text2Value
+    //     };
+       
+    //     // 使用fetch发送数据到后端API
+    //     fetch('https://aithub.com.cn:5040/technology', { // 替换为实际的API端点
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',  // 发送 JSON 数据
+    //         },
+    //         body: JSON.stringify(bodyForCaseUpload)
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         console.log('数据已发送到后端：', data);
+    //           // 隐藏加载动画
+    //     document.getElementById('loadingOverlay').style.display = 'none';
+    //     loadingSpinner.style.display = 'none';
+
+    //     // 显示提交成功的提示框
+    //     successMessage.style.display = 'block';
+    //      // 提交成功后的逻辑
+    //      resetPage();
+    //         // 这里可以添加处理成功响应的代码
+    //     })
+    //     .catch(error => {
+    //         showAlert('提交失败，请检查网络。');
+    
+    //         // 无论成功与否都隐藏加载动画
+    //         document.getElementById('loadingOverlay').style.display = 'none';
+    //     loadingSpinner.style.display = 'none';
+    //     });
+    // });
+    // closesuccessButton.addEventListener('click', function() {
+    //     successMessage.style.display = 'none';
+    // });
+    submitButton2.addEventListener('click',async  function() {
+     
         if (!broadTechnologySelect.value|| !smallTechnologySelect.value) {
             showAlert('请确保所有步骤都已成功完成。');
             return;
-        }
-          document.getElementById('loadingOverlay').style.display = 'flex';
-        loadingSpinner.style.display = 'block'
+        } 
+        const aiProgress = await aiAnalysis(2);
+        if (aiProgress <=70)
+            {   showAlert('分析失败，请检查网络。');
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('uploadProgressBarContainer').style.display = 'none';
+                return; // 如果分析失败，则中断
+            }
         // 获取选择器的值
+       
         const broadTechnologyValue = broadTechnologySelect.value;
         const smallTechnologyValue = smallTechnologySelect.value;
 
         // 获取文本框的值
-        const text2Value = textBox2.value;
-        const bodyForCaseUpload = {
-            title:broadTechnologyValue, classification:smallTechnologyValue,description:text2Value
-        };
-       
-        // 使用fetch发送数据到后端API
-        fetch('https://aithub.com.cn:5040/technology', { // 替换为实际的API端点
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',  // 发送 JSON 数据
-            },
-            body: JSON.stringify(bodyForCaseUpload)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('数据已发送到后端：', data);
-              // 隐藏加载动画
-        document.getElementById('loadingOverlay').style.display = 'none';
-        loadingSpinner.style.display = 'none';
-
-        // 显示提交成功的提示框
-        successMessage.style.display = 'block';
-         // 提交成功后的逻辑
-         resetPage();
-            // 这里可以添加处理成功响应的代码
-        })
-        .catch(error => {
-            showAlert('提交失败，请检查网络。');
-    
-            // 无论成功与否都隐藏加载动画
+        const textValue = aiAnalysistext;
+        if (!textValue) {
+            showAlert('分析失败，请检查网络。');
             document.getElementById('loadingOverlay').style.display = 'none';
-        loadingSpinner.style.display = 'none';
-        });
+            loadingSpinner.style.display = 'none';
+            return;
+        }
+        const bodyForCaseUpload = {
+                  title:broadTechnologyValue, classification:smallTechnologyValue,description:textValue 
+               };
+       
+          console.log(textValue)
+          simulateProgressUpdate(95);
+     
+          try {
+              const response = await fetch('https://aithub.com.cn:5040/technology', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(bodyForCaseUpload)
+              });
+      
+              const data = await response.json();
+              console.log('数据已发送到后端：', data);
+      
+              // 模拟进度条更新到 100%
+              simulateProgressUpdate(100);
+             
+              setTimeout(() => {
+                  document.getElementById('loadingOverlay').style.display = 'none';
+                  document.getElementById('uploadProgressBarContainer').style.display = 'none';
+                  document.getElementById('file-modal-2').classList.remove('show');
+                  updateProgressBar(0);
+                  successMessage.style.display = 'block';
+                  resetPage();
+              }, 3000);
+              // 显示 1 秒的 100% 进度
+          } catch (error) {
+              showAlert('提交失败，请检查网络。');
+              console.error('提交数据时出错:', error);
+              document.getElementById('loadingOverlay').style.display = 'none';
+              document.getElementById('uploadProgressBarContainer').style.display = 'none';
+              updateProgressBar(0);
+          }
+       
+     
     });
-    closesuccessButton.addEventListener('click', function() {
-        successMessage.style.display = 'none';
-    });
-}
+   
+});
 
 
