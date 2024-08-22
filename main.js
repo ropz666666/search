@@ -56,18 +56,18 @@ document.getElementById("backToTopBtn").onclick = function() {
     });
 };
 
-document.addEventListener('click', function(event) {
-    console.log(22);
-      const chatSidebar = document.getElementById('chat-sidebar');
-      const openbtn = document.getElementById('open-btn');
-      const SapperButton=document.getElementById('SapperButton');
-      if (chatSidebar.classList.contains('open')) {
-          const dialogBox = document.getElementById('chat-sidebar');
-          if (!dialogBox.contains(event.target)&&!openbtn.contains(event.target)&&!SapperButton.contains(event.target)) {
-              dialogBox.classList.remove('open');
-          }
-      }
-  });
+// document.addEventListener('click', function(event) {
+//     console.log(22);
+//       const chatSidebar = document.getElementById('chat-sidebar');
+//       const openbtn = document.getElementById('open-btn');
+//       const SapperButton=document.getElementById('SapperButton');
+//       if (chatSidebar.classList.contains('open')) {
+//           const dialogBox = document.getElementById('chat-sidebar');
+//           if (!dialogBox.contains(event.target)&&!openbtn.contains(event.target)&&!SapperButton.contains(event.target)) {
+//               dialogBox.classList.remove('open');
+//           }
+//       }
+//   });
       var textarea = document.getElementById("user-input");
       var input_container= document.getElementById("input-container");
   textarea.oninput=function(e){
@@ -243,6 +243,15 @@ async function callChatai(message) {
     // 添加AI的回复
     addMessage(data.reply,'ai-message');
     console.log(data.reply);
+    // 语音播放回复（假设有合适的 API）
+    // playReplyVoice(data.reply);
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+     }
+    const utterance = new SpeechSynthesisUtterance(data.reply);
+    utterance.onstart = () => showBubble(); // 播放开始时显示气泡
+  utterance.onend = () => hideBubble(); // 播放结束时隐藏气泡
+    speechSynthesis.speak(utterance);
   
 } catch (error) {
     console.error('Error:', error);
@@ -252,54 +261,6 @@ async function callChatai(message) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // async function fetchYiYanAPI(prompt) {
-       
-  //      const message = prompt.trim();
-  //      const thinkingMessage = '正在思考中...';
-  //     const aireply= addMessage(thinkingMessage, 'ai-message');
-  //       // 调用后端API
-  //       fetch('http://127.0.0.1:5000/api/ask', { 
-  //         method: 'POST',
-  //         headers: {
-  //             'Content-Type': 'application/json',
-  //             // 这里可以添加任何需要的其他头部信息
-  //         },
-  //         body: JSON.stringify({ message:message})
-  //     })
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       console.log(data);
-  //       var answerObject = JSON.parse(data);
-  //       aireply.remove();
-  //           // 添加AI的回复
-  //       addMessage(answerObject.result,'ai-message');
-  //     })
-  //     .catch(error => {
-  //         console.error('Error:', error);
-  //         // 这里处理错误
-  //     });
-  
-  
-  // }
   document.getElementById('close-btn').addEventListener('click', function() {
       document.getElementById('chat-sidebar').classList.remove('open');
   });
@@ -515,7 +476,241 @@ async function callChatai(message) {
        $('.s_btn').click(); // 触发搜索按钮的点击事件
      }
 
+  
+//   let mediaRecorder;
+// let audioChunks = [];
+//   document.getElementById('record-toggle-btn').addEventListener('click', async function () {
+//     let recordBtn = document.getElementById('record-toggle-btn');
+//     let isRecording = recordBtn.innerText === '停止说话';
+    
+//     if (isRecording) {
+//         // 停止录音
+//         mediaRecorder.stop();
+//         recordBtn.innerText = '开始说话';
+      
+        
+//         let audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+//         let formData = new FormData();
+//         formData.append('audio', audioBlob, 'audio.mp3');
+        
+//         // 发送录音数据到后端
+//         try {
+//             let response = await fetch('http://127.0.0.1:8080/upload_audio', {
+//                 method: 'POST',
+//                 body: formData
+//             });
+            
+//             if (!response.ok) {
+//                 throw new Error(`HTTP error! Status: ${response.status}`);
+//             }
+            
+//             let result = await response.json();
+//             document.getElementById('user-input').value = result.text;
+            
+//             // 调用 AI 对话
+//             await callChatai(result.text);
+//         } catch (error) {
+//             console.error('Error:', error);
+//         }
+//     } else {
+//         // 开始录音
+//         let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+//         mediaRecorder = new MediaRecorder(stream);
+//         audioChunks = [];
+        
+//         mediaRecorder.ondataavailable = function (event) {
+//             audioChunks.push(event.data);
+//         };
+        
+//         mediaRecorder.start();
+//         recordBtn.innerText = '停止说话';
+        
+//         // 确保不会重复添加结束录音事件监听器
+       
+       
+//     }
+// });
+     
+// 点击 end-call-btn 时停止录音并关闭模态框
+let mediaRecorder;
+let audioChunks = [];
+document.getElementById('end-call-btn').addEventListener('click', async function () {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+      speechSynthesis.cancel();
+  }
+  
+  // 隐藏语音通话模态框
+  document.getElementById('voice-call-modal').style.display = 'none';
+});
 
-     //点击返回顶部模块，就让窗口滚动页面上方
+
+document.getElementById('record-toggle-btn').addEventListener('click', async function () {
+
+  
+  let recordBtn = document.getElementById('record-toggle-btn');
+ 
+  if (speechSynthesis.speaking) {
+     hideBubble(); // 播放结束时隐藏气泡
+    speechSynthesis.cancel();
+   }
+  if (recordBtn.classList.contains('recording')){
+    // 停止录音
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      console.log("停止录音，状态：", mediaRecorder.state); // 添加调试信息
+        mediaRecorder.stop();
+        console.log("停止！");
+        recordBtn.classList.remove('recording');
+        recordBtn.innerHTML = '<i class="fas fa-microphone"></i>'; // 切换回麦克风图标
+
+    }
+    else{
+      console.log("mediaRecorder 不在录音状态，当前状态：", mediaRecorder.state);
+    }
+}
+
+else {
+  // 开始录音
+  if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // mediaRecorder = new MediaRecorder(stream); // 默认使用浏览器支持的格式
+      
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });  // 尝试使用 'audio/webm'
+
+      mediaRecorder.ondataavailable = function (event) {
+          audioChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = async function () {
+        console.log("录音结束，触发 onstop 事件"); // 添加调试信息
+        // let audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+        let audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        // 使用浏览器默认格式
+          const formData = new FormData();
+          formData.append('audio', audioBlob,'audio.webm');
+             console.log(111);
+             const utterance = new SpeechSynthesisUtterance("您的问题我已经收到，让豆包想一想哦！");
+              utterance.onstart = () => showBubble(); // 播放开始时显示气泡
+              utterance.onend = () => hideBubble(); // 播放结束时隐藏气泡
+              speechSynthesis.speak(utterance);
+          // 发送录音数据到后端
+          try {
+              const response = await fetch('http://127.0.0.1:8080/upload_audio', {
+                  method: 'POST',
+                  body: formData
+              });
+             
+              
+              if (!response.ok) {
+                  throw new Error(`HTTP error! Status: ${response.status}`);
+              }
+              console.log(333);
+              const result = await response.json();
+              addMessage(result.text, 'user-message');
+              callChatai(result.text);
+              // document.getElementById('user-input').value = result.text;
+             
+          } catch (error) {
+              console.error('Error:', error);
+          }
+
+          audioChunks = []; // 清空录音数据
+      };
+
+      console.log("开始录音，状态：", mediaRecorder.state); // 添加调试信息
+            mediaRecorder.start();
+            recordBtn.classList.add('recording');
+            recordBtn.innerHTML = '<i class="fas fa-stop"></i>'; // 切换为停止图标
+  }
+  else {
+    console.log("无法开始录音，mediaRecorder 状态：", mediaRecorder.state);
+}
+}
+
+});
+
+
+
+
+
+
+
+//   mediaRecorder.ondataavailable = function (event) {
+//       audioChunks.push(event.data);
+//   };
+
+  
+//   mediaRecorder.start();
+  
+//   // Stop recording after 5 seconds (you can change this as needed)
+//   setTimeout(() => mediaRecorder.stop(), 5000);
+// });
+     document.getElementById('record-btn').addEventListener('click', async function () {
+      
+      // 显示语音通话模态框
+      document.getElementById('voice-call-modal').style.display = 'flex';
+     // 终止任何正在播放的语音合成
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+  }
+
+  // 播放新的语音合成
+  const utterance = new SpeechSynthesisUtterance("嗨，你好！有什么问题可以和我说哦！");
+  utterance.onstart = () => showBubble(); // 播放开始时显示气泡
+  utterance.onend = () => hideBubble(); // 播放结束时隐藏气泡
+  speechSynthesis.speak(utterance);
+     });
+  //     let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     let mediaRecorder = new MediaRecorder(stream);
+  //     let audioChunks = [];
+      
+  //     mediaRecorder.ondataavailable = function (event) {
+  //         audioChunks.push(event.data);
+  //     };
+      
+  //     // 开始录音
+  //     mediaRecorder.start();
+      
+  //     // 确保不会重复添加结束录音事件监听器
+  //     let endCallBtn = document.getElementById('end-call-btn');
+  //     endCallBtn.removeEventListener('click', handleEndCall);
+  //     endCallBtn.addEventListener('click', handleEndCall);
+  
+  //     async function handleEndCall() {
+  //         // 停止录音
+  //         mediaRecorder.stop();
+  //         document.getElementById('voice-call-modal').style.display = 'none';
+          
+  //         let audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+  //         let formData = new FormData();
+  //         formData.append('audio', audioBlob, 'audio.mp3');
+          
+  //         // 发送录音数据到后端
+  //         try {
+  //             let response = await fetch('http://127.0.0.1:8080/upload_audio', {
+  //                 method: 'POST',
+  //                 body: formData
+  //             });
+              
+  //             if (!response.ok) {
+  //                 throw new Error(`HTTP error! Status: ${response.status}`);
+  //             }
+              
+  //             let result = await response.json();
+  //             document.getElementById('user-input').value = result.text;
+  //         } catch (error) {
+  //             console.error('Error:', error);
+  //         }
+  //     }
+  // });
+  function showBubble() {
+    const bubbleContainer = document.getElementById('bubble-container');
+    bubbleContainer.style.display = 'flex';
+}
+
+function hideBubble() {
+  const bubbleContainer = document.getElementById('bubble-container');
+  bubbleContainer.style.display = 'none';
+}
     });
 
