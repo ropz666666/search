@@ -237,6 +237,13 @@ async function callChatai(message) {
     // 添加AI的回复
     addMessage(data.reply,'ai-message');
     console.log(data.reply);
+    const utterance = new SpeechSynthesisUtterance(data.reply);
+    utterance.rate = 1.6;  // 语速
+utterance.pitch = 1.8; // 音调
+utterance.volume = 1.0; // 音量
+    utterance.onstart = () => showBubble(); // 播放开始时显示气泡
+  utterance.onend = () => hideBubble(); // 播放结束时隐藏气泡
+    speechSynthesis.speak(utterance);
   
 } catch (error) {
     console.error('Error:', error);
@@ -492,6 +499,207 @@ function showSpeechBubble() {
 
 // 设定时间间隔
 setInterval(showSpeechBubble, 8000);
+
+
+
+// 点击 end-call-btn 时停止录音并关闭模态框
+let mediaRecorder;
+let audioChunks = [];
+document.getElementById('end-call-btn').addEventListener('click', async function () {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+      mediaRecorder.stop();
+     
+      recordBtn.classList.remove('recording');
+        recordBtn.innerHTML = '<i class="fas fa-microphone"></i>'; // 切换回麦克风图标
+  }
+  speechSynthesis.cancel();
+  
+  // 隐藏语音通话模态框
+  document.getElementById('voice-call-modal').style.display = 'none';
+});
+
+const voices = window.speechSynthesis.getVoices();
+
+// 过滤出中文的女性声音
+const chineseFemaleVoices = voices.filter(voice => 
+    voice.lang.startsWith('zh') && voice.name.includes('male')
+);
+
+// 打印出找到的声音
+console.log(chineseFemaleVoices);
+
+// 如果有多个选项，您可以手动选择
+if (chineseFemaleVoices.length > 0) {
+    const selectedVoice = chineseFemaleVoices[0]; // 选择第一个找到的女声
+    console.log(`选择的声音: ${selectedVoice.name}`);
+}
+
+document.getElementById('record-toggle-btn').addEventListener('click', async function () {
+
+  
+  let recordBtn = document.getElementById('record-toggle-btn');
+ 
+  if (speechSynthesis.speaking) {
+     hideBubble(); // 播放结束时隐藏气泡
+    speechSynthesis.cancel();
+   }
+  if (recordBtn.classList.contains('recording')){
+    // 停止录音
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+      console.log("停止录音，状态：", mediaRecorder.state); // 添加调试信息
+        mediaRecorder.stop();
+        console.log("停止！");
+        recordBtn.classList.remove('recording');
+        recordBtn.innerHTML = '<i class="fas fa-microphone"></i>'; // 切换回麦克风图标
+
+    }
+    else{
+      console.log("mediaRecorder 不在录音状态，当前状态：", mediaRecorder.state);
+    }
+}
+
+else {
+  // 开始录音
+  if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // mediaRecorder = new MediaRecorder(stream); // 默认使用浏览器支持的格式
+      
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });  // 尝试使用 'audio/webm'
+
+      mediaRecorder.ondataavailable = function (event) {
+          audioChunks.push(event.data);
+      };
+
+      mediaRecorder.onstop = async function () {
+        console.log("录音结束，触发 onstop 事件"); // 添加调试信息
+        // let audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+        let audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+        // 使用浏览器默认格式
+          const formData = new FormData();
+               
+          // 后端调用 formData.append('audio', audioBlob,'audio.mp3');
+
+
+
+
+            //前端直接调用
+            formData.append('file', audioBlob, 'audio.mp3');
+          formData.append('model', 'whisper-1'); // 添加 model 参数
+          formData.append('language', 'zh');
+
+             console.log(111);
+             const utterance = new SpeechSynthesisUtterance("您的问题我已经收到，让豆包想一想哦！");
+            
+utterance.rate = 1.6;  // 语速
+utterance.pitch = 1.8; // 音调
+utterance.volume = 1.0; // 音量
+              utterance.onstart = () => showBubble(); // 播放开始时显示气泡
+              utterance.onend = () => hideBubble(); // 播放结束时隐藏气泡
+              speechSynthesis.speak(utterance);
+
+
+
+
+          //前端直接调用
+          try {
+                const response = await fetch('https://api.rcouyi.com/v1/audio/transcriptions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer sk-96Q3xExGXtFPYtTA6cD80a7c59Ff495783C7E98e244300C9',
+                    },
+                    body: formData
+                });
+  
+                if (!response.ok) {
+                          throw new Error(`HTTP error! Status: ${response.status}`);
+                      }
+                      console.log(333);
+                      const result = await response.json();
+                      addMessage(result.text, 'user-message');
+                      callChatai(result.text);
+                     
+                     
+                  } 
+                  catch (error) {
+                      console.error('Error:', error);
+                  }
+
+          // 发送录音数据到后端
+          // try {
+          //     const response = await fetch('http://127.0.0.1:8080/upload_audio', {
+          //         method: 'POST',
+          //         body: formData
+          //     });
+             
+              
+          //     if (!response.ok) {
+          //         throw new Error(`HTTP error! Status: ${response.status}`);
+          //     }
+          //     console.log(333);
+          //     const result = await response.json();
+          //     addMessage(result.text, 'user-message');
+          //     callChatai(result.text);
+          //     // document.getElementById('user-input').value = result.text;
+             
+          // } catch (error) {
+          //     console.error('Error:', error);
+          // }
+
+          audioChunks = []; // 清空录音数据
+      };
+
+      console.log("开始录音，状态：", mediaRecorder.state); // 添加调试信息
+            mediaRecorder.start();
+            recordBtn.classList.add('recording');
+            recordBtn.innerHTML = '<i class="fas fa-stop"></i>'; // 切换为停止图标
+  }
+  else {
+    console.log("无法开始录音，mediaRecorder 状态：", mediaRecorder.state);
+}
+}
+
+});
+
+     document.getElementById('record-btn').addEventListener('click', async function () {
+      
+      // 显示语音通话模态框
+      document.getElementById('voice-call-modal').style.display = 'flex';
+     // 终止任何正在播放的语音合成
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+  }
+
+  // 播放新的语音合成
+  const utterance = new SpeechSynthesisUtterance("嗨，你好！有什么问题可以和我说！");
+  utterance.rate = 1.6;  // 语速
+utterance.pitch = 1.8; // 音调
+utterance.volume = 1.0; // 音量
+  utterance.onstart = () => showBubble(); // 播放开始时显示气泡
+  utterance.onend = () => hideBubble(); // 播放结束时隐藏气泡
+  speechSynthesis.speak(utterance);
+     });
+  
+  function showBubble() {
+    const bubbleContainer = document.getElementById('bubble-container');
+    bubbleContainer.style.display = 'flex';
+}
+
+function hideBubble() {
+  const bubbleContainer = document.getElementById('bubble-container');
+  bubbleContainer.style.display = 'none';
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 });
